@@ -26,6 +26,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import source.Strings;
 
@@ -61,9 +64,10 @@ public class Login extends JFrame implements ActionListener {
         int height = screensize.height/2;
         setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
 		pack();
-		setVisible(true);
-	}
+	    setVisible(true);
+ }
 
+	
 	/**
 	 * @param void
 	 * @return void
@@ -83,7 +87,8 @@ public class Login extends JFrame implements ActionListener {
 	 * @return void 
 	 */
 	private void initBox() {
-		label0 = new JLabel("含羞草童鞋"+"\n"+"欢迎你使用小白杨日记本含羞草专版");
+		label0 = new JLabel("含羞草童鞋,欢迎你使用小白杨日记本含羞草专版");
+		label0.setOpaque(false);
 		label1 = new JLabel(strResource.getNAME());
 		label2 = new JLabel(strResource.getPASS());
 		usrField = new JTextField(20);
@@ -94,7 +99,8 @@ public class Login extends JFrame implements ActionListener {
 		logIn.addActionListener(this);
 		register.addActionListener(this);
 
-		panel=new UIInterface().getPanel(imgPath);
+//		panel=new UIInterface().getPanel(imgPath);
+		panel=new JJPanel(imgPath);
 		panel.setLayout(new FlowLayout());
 		baseBox = Box.createHorizontalBox();
 		boxV1 = Box.createVerticalBox();

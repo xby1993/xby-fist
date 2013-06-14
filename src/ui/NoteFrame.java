@@ -1,5 +1,6 @@
 package ui;
 
+import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,12 +16,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
@@ -38,11 +39,12 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
-public class NoteFrame extends JFrame {
+import main.Help;
+
+public class NoteFrame extends JFrame implements UndoableEditListener,ActionListener,ItemListener {
 
 	/**
 	 * 
@@ -50,60 +52,26 @@ public class NoteFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	// 菜单条
 	private JMenuBar menuBar;
-	// 文件菜单项
-	private JMenu menuFile;
-	private JMenuItem newfile;// 新建
-	private JMenuItem openfile;// 打开
-	private JMenuItem savefile;// 保存
-	private JMenuItem saveAs;// 另存为
-	private JMenuItem pageSetup;// 页面设置
-	private JMenuItem print;// 打印
-	private JMenuItem exit;// 退出
-	// 编辑菜单项
-	private JMenu menuEdit;
-	private JMenuItem cancle;// 撤销
-	private JMenuItem recover;// 恢复
-	private JMenuItem cut;// 剪切
-	private JMenuItem copy;// 复制
-	private JMenuItem paste;// 粘贴
-	private JMenuItem delete;// 删除
-	private JMenuItem selectAll;// 全选
-	// 搜索菜单
-	private JMenu searchMenu;
-	private JMenuItem find;// 查找
-	private JMenuItem findNext;// 查找下一个
-	private JMenuItem replace;// 替换
-	private JMenuItem switchTo;// 转到
-	// 格式菜单项
-	private JMenu menuFormat;
-	private JCheckBoxMenuItem autowrap;// 自动换行
-	private JMenuItem font;// 字体
-	// 查看菜单项
-	private JMenu menuView;
-	private JCheckBoxMenuItem statusBar;// 状态栏
-	// 帮助菜单项
-	private JMenu menuHelp;
-	private JMenuItem helpTopics;// 帮助主题
-	private JMenuItem about;// 关于记事本
-	// 右键菜单
+	String[] jmenuStr={"文件","编辑","搜索","格式","帮助"};
+	String[][] jitemStr={{"新建","打开","保存","另存为","","页面设置","打印","","退出"},
+			{"撤销","恢复","剪切","复制","粘贴","删除","全选"},{"查找","查找下一个","替换","转到"},
+			{"字体"},{"说明","关于"}};
+	//设置快捷键绑定
+	char[][] shortcut = {{'N','O','S',' ',' ',' ','P',' ','E'},{'U','Y','X','C','V','D','A'},
+			{'F','G','R','L'},{' '},{' ',' '}};
+	//右键菜单
 	private JPopupMenu pmenu;
-	private JMenuItem pcancle;// 撤销
-	private JMenuItem precover;// 恢复
-	private JMenuItem pcut;// 剪切
-	private JMenuItem pcopy;// 复制
-	private JMenuItem ppaste;// 粘贴
-	private JMenuItem pdelete;// 删除
-	private JMenuItem pselectall;// 全选
-	// private JCheckBoxMenuItem pkeyboard;//打开/关闭软键盘
+	String[] jpopItemStr = {"撤销","恢复","剪切","复制","粘贴","删除","全选"};
+	
 	// 编辑文字区
-	private JTextArea textArea;
+	private JJTextArea textArea;
 	private JScrollPane scrollpane;
+	
 	// 标示状态的工具条
 	private JToolBar status;
 	private JLabel currentstatus;
 	String statusinfo = "";
 
-	private JButton openButton, saveButton;// 快速打开和保存文件
 	private JTextField date;// 日期输入框
     String imgPath=new String("src/source/image/7.jpg");
 	private JPanel panel1, panel2;
@@ -115,13 +83,11 @@ public class NoteFrame extends JFrame {
 	// 文本是否改变标志
 	private Boolean changed = false;
 	// 撤销和恢复
-	UIInterface uii=new UIInterface();
 
 	public NoteFrame() {
 		initBar();
-		initPopMenu();
 		initPanel3();
-		initShutcut();
+		initPopMenu();
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = size.width / 2;
 		int height = size.height / 2;
@@ -142,133 +108,30 @@ public class NoteFrame extends JFrame {
 	void initBar() {
 		// 初始化文件菜单
 		menuBar = new JMenuBar();
-		menuFile = new JMenu("文件");
-		newfile = new JMenuItem("新建(N)");
-		openfile = new JMenuItem("打开(O)");
-		savefile = new JMenuItem("保存(S)");
-		saveAs = new JMenuItem("另存为(A)");
-		pageSetup = new JMenuItem("页面设置");
-		print = new JMenuItem("打印");
-		exit = new JMenuItem("退出(Q)");
-		
-		menuFile.add(newfile);
-		menuFile.add(openfile);
-		menuFile.add(savefile);
-		menuFile.add(saveAs);
-		menuFile.addSeparator();
-		menuFile.add(pageSetup);
-		menuFile.add(print);
-		menuFile.addSeparator();
-		menuFile.add(exit);
-		menuBar.add(menuFile);
-
-		// 初始化编辑菜单
-		menuEdit = new JMenu("编辑");
-		cancle = new JMenuItem("撤销(U)");
-		recover = new JMenuItem("重做(R)");
-		cut = new JMenuItem("剪切(X)");
-		copy = new JMenuItem("复制(C)");
-		paste = new JMenuItem("粘贴(V)");
-		delete = new JMenuItem("删除(D)");
-		selectAll = new JMenuItem("全部选中(A)");
-		
-		menuEdit.add(cancle);
-		menuEdit.add(recover);
-		menuEdit.add(cut);
-		menuEdit.add(copy);
-		menuEdit.add(paste);
-		menuEdit.add(delete);
-		menuEdit.addSeparator();
-		menuEdit.add(selectAll);
-		menuBar.add(menuEdit);
-		// 初始化格式菜单
-		menuFormat = new JMenu("格式");
-		autowrap = new JCheckBoxMenuItem("自动换行(W)");
-		autowrap.setSelected(true);
-		font = new JMenuItem("字体(F)--");
-		
-		menuFormat.add(autowrap);
-		menuFormat.add(font);
-		menuBar.add(menuFormat);
-		// 初始化查看菜单
-		menuView = new JMenu("查看");
-		statusBar = new JCheckBoxMenuItem("状态栏(S)", false);
-		
-		menuView.add(statusBar);
-		menuBar.add(menuView);
-		// 初始化搜索菜单
-		searchMenu = new JMenu("搜索");
-		find = new JMenuItem("查找(F)...");
-		find.setEnabled(false);
-		findNext = new JMenuItem("查找下一个(N)");
-		findNext.setEnabled(false);
-		replace = new JMenuItem("替换(R)...");
-		replace.setEnabled(false);
-		switchTo = new JMenuItem("转到(G)...");
-		switchTo.setEnabled(false);
-		
-		searchMenu.add(find);
-		searchMenu.add(findNext);
-		searchMenu.add(switchTo);
-		menuBar.add(searchMenu);
-		// 初始化帮助菜单
-		menuHelp = new JMenu("帮助");
-		helpTopics = new JMenuItem("使用手册");
-		about = new JMenuItem("关于---");
-		
-		menuHelp.add(helpTopics);
-		menuHelp.add(about);
-		menuBar.add(menuHelp);
+		JMenu[] jmenu=new JMenu[jmenuStr.length];
+		JMenuItem[][] jitem=new JMenuItem[jitemStr.length][];
+		for (int i = 0; i < jmenu.length; i++) {
+			jmenu[i]=new JMenu(jmenuStr[i]);
+			jitem[i]=new JMenuItem[jitemStr[i].length];	
+			for (int j = 0; j < jitem[i].length; j++) {
+				if ("".equals(jitemStr[i][j])) {
+					jmenu[i].addSeparator();
+				} else {
+					jitem[i][j]=new JMenuItem(jitemStr[i][j]);
+					jitem[i][j].addActionListener(this);
+					jmenu[i].add(jitem[i][j]);
+					if(shortcut[i][j]==' '){
+						continue;
+					}else{
+						jitem[i][j].setAccelerator(KeyStroke.getKeyStroke(shortcut[i][j], InputEvent.CTRL_MASK));
+					}
+				}
+			}
+			
+			
+			menuBar.add(jmenu[i]);
+		}
 		setJMenuBar(menuBar);
-		textArea=new JTextArea(30,50);
-	}
-	// 右键菜单
-	void initPopMenu() {
-		
-		pmenu = new JPopupMenu();
-		pcancle = new JMenuItem("撤销(U)");
-		precover = new JMenuItem("恢复(R)");
-		pcut = new JMenuItem("剪切(T)");
-		pcut.setEnabled(false);
-		pcopy = new JMenuItem("复制(C)");
-		pcopy.setEnabled(false);
-		ppaste = new JMenuItem("粘贴(P)");
-		ppaste.setEnabled(false);
-		pdelete = new JMenuItem("删除(D)");
-		pdelete.setEnabled(false);
-		pselectall = new JMenuItem("全选(A)");
-		pselectall.setEnabled(false);
-		
-
-		pmenu.add(pcancle);
-		pmenu.add(precover);
-		pmenu.addSeparator();
-		pmenu.add(pcut);
-		pmenu.add(pcopy);
-		pmenu.add(ppaste);
-		pmenu.add(pdelete);
-		pmenu.add(pselectall);
-		pmenu.addSeparator();
-		textArea.setComponentPopupMenu(pmenu);// 调用该方法即可设置右键菜单，无需像AWT中那样使用事件机制
-
-		
-	}
-	void initShutcut(){
-		newfile.setAccelerator(KeyStroke.getKeyStroke('N', InputEvent.CTRL_MASK));
-		openfile.setAccelerator(KeyStroke.getKeyStroke('O', InputEvent.CTRL_MASK));
-		savefile.setAccelerator(KeyStroke.getKeyStroke('S', InputEvent.CTRL_MASK));
-		exit.setAccelerator(KeyStroke.getKeyStroke('Q', InputEvent.CTRL_MASK));
-		cancle.setAccelerator(KeyStroke.getKeyStroke('Z', InputEvent.CTRL_MASK));
-		recover.setAccelerator(KeyStroke.getKeyStroke('Y', InputEvent.CTRL_MASK));
-		cut.setAccelerator(KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK));
-		copy.setAccelerator(KeyStroke.getKeyStroke('C', InputEvent.CTRL_MASK));
-		paste.setAccelerator(KeyStroke.getKeyStroke('V', InputEvent.CTRL_MASK));
-		delete.setAccelerator(KeyStroke.getKeyStroke('D', InputEvent.CTRL_MASK));
-		selectAll.setAccelerator(KeyStroke.getKeyStroke('A', InputEvent.CTRL_MASK));
-		find.setAccelerator(KeyStroke.getKeyStroke('F', InputEvent.CTRL_MASK));
-		findNext.setAccelerator(KeyStroke.getKeyStroke('G', InputEvent.CTRL_MASK));
-		switchTo.setAccelerator(KeyStroke.getKeyStroke('L', InputEvent.CTRL_MASK));
-		replace.setAccelerator(KeyStroke.getKeyStroke('H', InputEvent.CTRL_MASK));
 	}
 	void initPanel3(){
 		initPanel1();
@@ -282,32 +145,40 @@ public class NoteFrame extends JFrame {
 		add(pane1);
 		
 	}
+	void initPopMenu(){
+		pmenu=new JPopupMenu();
+		JMenuItem[] jpopItem=new JMenuItem[jpopItemStr.length];
+		for (int i = 0; i < jpopItem.length; i++) {
+			jpopItem[i] = new JMenuItem(jpopItemStr[i]);
+			jpopItem[i].addActionListener(this);
+			pmenu.add(jpopItem[i]);
+			
+		}
+		textArea.setComponentPopupMenu(pmenu);
+	}
 
 	void initPanel1() {
-		textArea = new JTextArea(30,40);
+		textArea = new JJTextArea(imgPath);
 //		textArea.setFont(new Font("黑体", 20, 20));
 		textArea.setLineWrap(true);// 设置自动换行
 		textArea.setWrapStyleWord(true);// 激活断行不断字功能
 		textArea.setEnabled(true);
 		textArea.setVisible(true);
-		scrollpane = new JScrollPane(textArea);
-		panel1=uii.getPanel(imgPath);
+//		scrollpane = new JScrollPane(textArea);
+//		panel1=uii.getPanel(imgPath);
+		panel1=new JJPanel(imgPath);
 		panel1.setLayout(new BorderLayout());
 		date = new JTextField(20);
 		day = new JComboBox<String>();
-		day.addItem("星期一");
-		day.addItem("星期二");
-		day.addItem("星期三");
-		day.addItem("星期四");
-		day.addItem("星期五");
-		day.addItem("星期六");
-		day.addItem("星期日");
+		String[] week={"星期一","星期二","星期三","星期四","星期五","星期六","星期天"};
+		for (int i = 0; i < week.length; i++) {
+			day.addItem(week[i]);
+		}
+		String[] wetherStr={"晴","阴","多云","雨","雪"};
 		wether = new JComboBox<String>();
-		wether.addItem("晴");
-		wether.addItem("阴");
-		wether.addItem("多云");
-		wether.addItem("雨");
-		wether.addItem("雪");
+		for (int i = 0; i < wetherStr.length; i++) {
+			wether.addItem(wetherStr[i]);
+		}
 		Box box = Box.createHorizontalBox();
 		box.add(new JLabel("日期"));
 		box.add(date);
@@ -318,14 +189,15 @@ public class NoteFrame extends JFrame {
 		box.add(new JLabel("天气"));
 		box.add(wether);
 		panel1.add(box,BorderLayout.NORTH);
-		panel1.add(textArea,BorderLayout.CENTER);
+		panel1.add(new JScrollPane(textArea),BorderLayout.CENTER);
 		panel1.setVisible(true);
 		
 	}
 
 	void initPanel2() {
 		// 设置背景的控件
-		panel2=uii.getPanel(imgPath);
+//		panel2=uii.getPanel(imgPath);
+		panel2=new JJPanel(imgPath);
 		ButtonGroup setBackground = new ButtonGroup();
 		JRadioButton[] background = new JRadioButton[4];
 		JPanel backPanel = new JPanel();
@@ -334,7 +206,7 @@ public class NoteFrame extends JFrame {
 		for (int i = 0; i < background.length; i++) {
 			background[i] = new JRadioButton(backgroundName[i]);
 			background[i].setOpaque(false);//设置为非透明或者非纯白，很有用。
-//			background[i].addItemListener(this);
+			background[i].addItemListener(this);
 			setBackground.add(background[i]);
 			backgroundBox.add(background[i]);
 			backgroundBox.add(Box.createVerticalStrut(10));
@@ -349,8 +221,8 @@ public class NoteFrame extends JFrame {
 		ButtonGroup musicGroup = new ButtonGroup();
 		musicOn = new JRadioButton("开");
 		musicOff = new JRadioButton("关");
-//		musicOn.addItemListener(this);
-//		musicOff.addItemListener(this);
+		musicOn.addItemListener(this);
+		musicOff.addItemListener(this);
 		musicOn.setOpaque(false);
 		musicOff.setOpaque(false);
 		musicGroup.add(musicOn);
@@ -362,21 +234,64 @@ public class NoteFrame extends JFrame {
 				TitledBorder.LEADING, TitledBorder.TOP, new Font("Dialog",
 						Font.BOLD, 12), new Color(51, 51, 51)));
 		// 按钮
-		openButton = new JButton("打开以前的日记");
-		saveButton = new JButton("保存当前的日记");
 		Box panel1Box = Box.createVerticalBox();
 		panel1Box.add(Box.createVerticalStrut(20));
 		panel1Box.add(music);
 		panel1Box.add(Box.createVerticalStrut(30));
 		panel1Box.add(backPanel);
 		panel1Box.add(Box.createVerticalStrut(170));
-		panel1Box.add(openButton);
 		panel1Box.add(Box.createVerticalStrut(10));
-		panel1Box.add(saveButton);
 		panel2.add(panel1Box);
 		panel2.setVisible(true);
-//		openButton.addActionListener(this);
-//		saveButton.addActionListener(this);
 	}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			switch (e.getActionCommand()) {
+			case "关于":
+				Help.about();
+				break;
+			case "说明":
+				Help.help();
+				break;
+			case "字体":
+				break;
+			case "查找":
+				break;
+			case "查找下一个":
+			case "替换":
+			case "转到":
+			case "撤销":
+			case "恢复":
+			case "剪切":
+			case "复制":
+			case "粘贴":
+			case "删除":
+			case "全选":
+			case "新建":
+			case "打开":
+			case "保存":
+			case "另存为":
+			case "页面设置":
+			case "打印":
+			case "退出":
+		default:
+			break;
+		}
+	}
+
+
+	@Override
+	public void undoableEditHappened(UndoableEditEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		// TODO Auto-generated method stub
+	
+}
 }
 	

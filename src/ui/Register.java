@@ -23,6 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import source.Strings;
 
@@ -54,6 +56,7 @@ public class Register extends JFrame implements ActionListener{
         int height = screensize.height/2;
         setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
 		pack();
+		
 		setVisible(true);
 	}
 	void initMenuBar(){
@@ -80,7 +83,8 @@ public class Register extends JFrame implements ActionListener{
 		boxV1 = Box.createVerticalBox();
 		boxV2 =Box.createVerticalBox();
 		baseBox=Box.createHorizontalBox();
-		panel =new UIInterface().getPanel(imgPath);
+//		panel =new UIInterface().getPanel(imgPath);
+		panel=new JJPanel(imgPath);
 		boxV1.add(label1);
 		boxV1.add(Box.createVerticalStrut(25));
 		boxV1.add(label2);
