@@ -1,6 +1,5 @@
 package ui;
 
-import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,28 +19,26 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
+import main.Edit;
 import main.Help;
 
 public class NoteFrame extends JFrame implements UndoableEditListener,ActionListener,ItemListener {
@@ -64,7 +61,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 	String[] jpopItemStr = {"撤销","恢复","剪切","复制","粘贴","删除","全选"};
 	
 	// 编辑文字区
-	private JJTextArea textArea;
+	private static JJTextArea textArea;
 	private JScrollPane scrollpane;
 	
 	// 标示状态的工具条
@@ -82,6 +79,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 	private File tempfile;// 临时存储文件
 	// 文本是否改变标志
 	private Boolean changed = false;
+	private static UndoManager undoManager=new UndoManager();//新建可撤销、恢复列表类
 	// 撤销和恢复
 
 	public NoteFrame() {
@@ -166,6 +164,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 		textArea.setVisible(true);
 //		scrollpane = new JScrollPane(textArea);
 //		panel1=uii.getPanel(imgPath);
+		textArea.getDocument().addUndoableEditListener(this);//添加可撤销、恢复编辑监听
 		panel1=new JJPanel(imgPath);
 		panel1.setLayout(new BorderLayout());
 		date = new JTextField(20);
@@ -262,7 +261,11 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 			case "替换":
 			case "转到":
 			case "撤销":
+				  Edit.cancel();
+				  break;
 			case "恢复":
+				Edit.recover();
+				 break;
 			case "剪切":
 			case "复制":
 			case "粘贴":
@@ -284,7 +287,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 	@Override
 	public void undoableEditHappened(UndoableEditEvent e) {
 		// TODO Auto-generated method stub
-		
+		undoManager.addEdit(e.getEdit());
 	}
 
 
@@ -293,5 +296,11 @@ public class NoteFrame extends JFrame implements UndoableEditListener,ActionList
 		// TODO Auto-generated method stub
 	
 }
+	public static UndoManager getUndoManager(){
+		return undoManager;
+	}
+	public static JJTextArea getJTextArea(){
+		return textArea;
+	}
 }
 	
