@@ -7,10 +7,15 @@ import java.util.Calendar;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+
 import ui.NoteFrame;
 public class Edit {
-	private Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    private StringSelection contents;
+	private static Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    private static StringSelection contents;
+   NoteFrame frame;
+    public Edit(NoteFrame frame){
+    	this.frame=frame;
+    }
 	 public static void cancel() {
 	 if(NoteFrame.getUndoManager().canUndo())
      {
@@ -67,26 +72,26 @@ public class Edit {
 	    //实现查找方法
 	    public void Find()
 	    {
-	        FindAndReplace far = new FindAndReplace(NoteFrame);
-	        far.showFindAndReplace(NoteFrame, "查找");
+	        FindAndReplace far = new FindAndReplace(frame);
+	        far.showFindAndReplace(frame, "查找");
 	    }
 	    //实现查找下一个方法
 	    public void FindNext()
 	    {
-	        FindAndReplace far = new FindAndReplace(NoteFrame);
-	        far.showFindAndReplace(NoteFrame, "查找下一个");
+	        FindAndReplace far = new FindAndReplace(frame);
+	        far.showFindAndReplace(frame, "查找下一个");
 	    }
 	    //实现替换方法
 	    public void Replace()
 	    {
-	        FindAndReplace far = new FindAndReplace(NoteFrame);
-	        far.showFindAndReplace(NoteFrame, "替换");
+	        FindAndReplace far = new FindAndReplace(frame);
+	        far.showFindAndReplace(frame, "替换");
 	    }
 	    //实现转到方法
 	    public void SwitchTo()
 	    {
 	        String [] text = NoteFrame.getJTextArea().getText().split("\n");
-	        String str = JOptionPane.showInputDialog(NoteFrame, "行数(L):","转到下列行",
+	        String str = JOptionPane.showInputDialog(frame, "行数(L):","转到下列行",
 	                JOptionPane.QUESTION_MESSAGE);      
 	        if(str!=null)//str==null是点击了取消按钮触发的事件
 	        {
@@ -105,12 +110,12 @@ public class Edit {
 	                }
 	                else
 	                {
-	                    JOptionPane.showMessageDialog(NoteFrame, "列数超出范围！", "错误提示", JOptionPane.ERROR_MESSAGE);
+	                    JOptionPane.showMessageDialog(frame, "列数超出范围！", "错误提示", JOptionPane.ERROR_MESSAGE);
 	                }
 	            } 
 	            else
 	            {
-	                JOptionPane.showMessageDialog(NoteFrame, "无效的字符！", "错误提示", JOptionPane.ERROR_MESSAGE);
+	                JOptionPane.showMessageDialog(frame, "无效的字符！", "错误提示", JOptionPane.ERROR_MESSAGE);
 	            }
 	        }
 	    }

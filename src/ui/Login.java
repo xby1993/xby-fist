@@ -26,9 +26,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import source.Strings;
 
@@ -51,7 +48,7 @@ public class Login extends JFrame implements ActionListener {
 	Box baseBox, boxV1, boxV2;
 	JPanel panel;
 	Strings strResource = new Strings();
-	String imgPath = new String("src/source/image/7.jpg");
+	String imgPath = new String("src/source/image/2.jpg");
 	public Login() {
 		initMenuBar();
 		initBox();
@@ -99,7 +96,7 @@ public class Login extends JFrame implements ActionListener {
 		logIn.addActionListener(this);
 		register.addActionListener(this);
 
-//		panel=new UIInterface().getPanel(imgPath);
+//		panel=new UIInterface().getPanel(imgPath)
 		panel=new JJPanel(imgPath);
 		panel.setLayout(new FlowLayout());
 		baseBox = Box.createHorizontalBox();

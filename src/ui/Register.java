@@ -23,8 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+
+import main.FileOperator;
 
 import source.Strings;
 
@@ -40,10 +40,11 @@ public class Register extends JFrame implements ActionListener{
 	Box baseBox, boxV1, boxV2;
 	JPanel panel;
 	Strings strResource = new Strings();
-	String imgPath=new String("src/source/image/7.jpg");
+	String imgPath=new String("src/source/image/2.jpg");
 	private AbstractButton menuItem;
 	private JMenuBar menuBar;
 	private JMenu menu;
+	private static String usr;
 	public Register() {
 		initMenuBar();
 		initBox();
@@ -84,6 +85,7 @@ public class Register extends JFrame implements ActionListener{
 		boxV2 =Box.createVerticalBox();
 		baseBox=Box.createHorizontalBox();
 //		panel =new UIInterface().getPanel(imgPath);
+//		JJPanel.setImgPath(imgPath);
 		panel=new JJPanel(imgPath);
 		boxV1.add(label1);
 		boxV1.add(Box.createVerticalStrut(25));
@@ -106,6 +108,7 @@ public class Register extends JFrame implements ActionListener{
 		add(label0,BorderLayout.NORTH);
 		add(panel,BorderLayout.CENTER);
 	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == menuItem) {
 			JOptionPane.showMessageDialog(this, "小白杨第一个工程-含羞草专版日记本" + "\n"
@@ -120,7 +123,7 @@ public class Register extends JFrame implements ActionListener{
 				
 				String strpasswd =new String(passwdField.getPassword());
 				String str2=new String(repeatField.getPassword());
-				String usr=new String(usrField.getText());
+				usr = new String(usrField.getText());
 				String str ="";
 				if(!file.exists()){
 					file.createNewFile();
@@ -151,6 +154,7 @@ public class Register extends JFrame implements ActionListener{
 				file1.writeBytes(strpasswd);
 				file1.writeBytes("  ");
 				file1.close();
+				FileOperator.mkdir("diary/"+usr);
 				JOptionPane.showMessageDialog(this, "注册成功");
 				new Login().setTitle("赶快登陆吧");
 				this.dispose();
@@ -162,5 +166,8 @@ public class Register extends JFrame implements ActionListener{
 				e1.printStackTrace();
 			}
 		}
+	}
+	public static String getUsr() {
+		return usr; 
 	}
 }
