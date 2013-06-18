@@ -128,6 +128,7 @@ public class Login extends JFrame implements ActionListener {
 		if (e.getSource() == menuItem) {
 			JOptionPane.showMessageDialog(this, "小白杨第一个工程-含羞草专版日记本" + "\n"
 					+ "献给我最爱的人", "关于", JOptionPane.INFORMATION_MESSAGE);
+			return;
 
 		} else if (e.getSource() == register) {
 			new Register();

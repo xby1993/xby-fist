@@ -48,8 +48,11 @@ import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
 import main.Edit;
+import main.FileOperator;
+import main.FindAndReplace;
 import main.Help;
 import main.Music;
+import main.MyFont;
 
 public class NoteFrame extends JFrame implements UndoableEditListener,
 		ActionListener, ItemListener {
@@ -115,7 +118,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		pack();
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
-
+				new FileOperator(NoteFrame.this).exit();
 			}
 		});
 
@@ -156,17 +159,19 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 
 	void initTextArea() {
 		textArea = new JJTextArea(imgPath);
-		// textArea.setFont(new Font("黑体", 20, 20));
-		textArea.setLineWrap(true);// 设置自动换行
+		 textArea.setFont(new Font("黑体", 20, 20));
+		textArea.setLineWrap(true);// 设置自动换行  
 		textArea.setWrapStyleWord(true);// 激活断行不断字功能
 		textArea.setEnabled(true);
 		textArea.setVisible(true);
+		textArea.setTabSize(2);//设置tab键大小
 		scrollpane = new JScrollPane(textArea);
 		// scrollpane = new JScrollPane(textArea);
 		// panel1=uii.getPanel(imgPath);
 		textArea.getDocument().addUndoableEditListener(this);// 添加可撤销、恢复编辑监听
 		initPopMenu();
 		textArea.setComponentPopupMenu(pmenu);
+	
 		doc = textArea.getDocument();
 		doc.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent de) {
@@ -373,12 +378,14 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			Help.help();
 			break;
 		case "字体":
+			new MyFont(new Font("黑体",20,20),this).showDialog(this);
 			break;
 		case "查找":
-			break;
 		case "查找下一个":
 		case "替换":
 		case "转到":
+			new FindAndReplace(this).showFindAndReplace(this, "查找");
+			break;
 		case "撤销":
 			Edit.cancel();
 			break;
@@ -386,17 +393,42 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			Edit.recover();
 			break;
 		case "剪切":
+			Edit.Cut();
+			break;
 		case "复制":
+			new Edit(this).Copy();
+			break;
 		case "粘贴":
+			new Edit(this).Paste();
+			break;
 		case "删除":
+			new Edit(this).Delete();
+			break;
+			
 		case "全选":
+			new Edit(this).SelectAll();
+			break;
 		case "新建":
+			new FileOperator(this).createFile();
+			break;
 		case "打开":
+			new FileOperator(this).openFile();
+			break;
 		case "保存":
+			new FileOperator(this).saveFile();
+			break;
 		case "另存为":
+			new FileOperator(this).saveasFile();
+			break;
 		case "页面设置":
+			new FileOperator(this).pageSetup();
+			break;
 		case "打印":
+			new FileOperator(this).print();
+			break;
 		case "退出":
+			new FileOperator(this).exit();
+			break;
 		default:
 			break;
 		}

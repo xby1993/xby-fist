@@ -217,7 +217,7 @@ public class FileOperator {
 	}
 
 	// 实现退出方法
-	public void exit() {
+	public  void exit() {
 		if (frame.getChanged() == true) {
 			int result = JOptionPane.showConfirmDialog(null,
 					"文件已经修改，是否在退出之前保存文件？", "询问",
