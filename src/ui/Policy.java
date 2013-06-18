@@ -51,7 +51,7 @@ public class Policy extends JFrame implements ActionListener{
 		textArea.setOpaque(false);
 		textArea.setFont(new Font("不知道",Font.ITALIC,20));
 		Box box=Box.createVerticalBox();
-		box.add(label1);
+		box.add(label1); 
 		box.add(Box.createVerticalStrut(30));
 		box.add(textArea);
 		box.add(Box.createVerticalStrut(100));
