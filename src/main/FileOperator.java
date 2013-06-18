@@ -12,8 +12,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ui.Login;
 import ui.NoteFrame;
-import ui.Register;
 
 public class FileOperator {
 	private NoteFrame frame;
@@ -39,7 +39,7 @@ public class FileOperator {
 	}
 
 	public void readTo() {
-		JFileChooser chooser = new JFileChooser("diary/" + Register.getUsr());
+		JFileChooser chooser = new JFileChooser("diary/" + Login.getUser());
 		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
@@ -89,7 +89,7 @@ public class FileOperator {
 			writer.close();
 			frame.setChanged(false);// 回写一次之后，此时当前文本没有被修改
 			return true;
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(frame, "保存文件失败！");
 			return false;
 		}
@@ -151,14 +151,32 @@ public class FileOperator {
 
 	// 实现保存文件
 	public void saveFile() {
-		writeBack(frame.getTempFile());
+		File file=null;
+		if(frame.getTempFile()==null){
+			JFileChooser chooser = new JFileChooser("diary/" +Login.getUser());
+			chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
+			chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
+			chooser.setFileFilter(filter);
+			int reback=chooser.showSaveDialog(frame);
+			if(reback==JFileChooser.APPROVE_OPTION){
+				file=chooser.getSelectedFile();
+				writeBack(file);
+			}else{
+				return;
+			}
+		}else{file=frame.getTempFile();
+			writeBack(file);
+		}
+		
 		int length = NoteFrame.getJTextArea().getText().length();
 		NoteFrame.getJTextArea().setCaretPosition(length);
 	}
 
 	// 实现文件另存为
 	public void saveasFile() {
-		JFileChooser chooser = new JFileChooser("diary/"+Register.getUsr());
+		JFileChooser chooser = new JFileChooser("diary/"+Login.getUser());
 		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
@@ -227,18 +245,18 @@ public class FileOperator {
 				saveFile();
 				frame.dispose();
 				System.exit(0);
-			} else if (result == JOptionPane.CANCEL_OPTION) {
+			} else if (result == JOptionPane.NO_OPTION) {
 				// 不保存，则不往回写这个文件
 				frame.dispose();
 				System.exit(0);
 			}
 		} else {
-			int result = JOptionPane.showConfirmDialog(frame, "您确定要退出吗？", "询问",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null);
-			if (result == JOptionPane.OK_OPTION) {
+			int result = JOptionPane.showConfirmDialog(null, "确定要退出吗?"," ",JOptionPane.YES_NO_OPTION);
+			if (result == JOptionPane.YES_OPTION) {
 				frame.dispose();
 				System.exit(0);
+			}else{
+				return;
 			}
 		}
 	}

@@ -49,6 +49,7 @@ public class Login extends JFrame implements ActionListener {
 	JPanel panel;
 	Strings strResource = new Strings();
 	String imgPath = new String("src/source/image/2.jpg");
+	private static String usrStr;
 	public Login() {
 		initMenuBar();
 		initBox();
@@ -131,7 +132,7 @@ public class Login extends JFrame implements ActionListener {
 			return;
 
 		} else if (e.getSource() == register) {
-			new Register();
+			new Policy();
 			Login.this.setVisible(false);
 			return;
 		} else if (e.getSource() == logIn) {
@@ -157,6 +158,7 @@ public class Login extends JFrame implements ActionListener {
 						if (scan.hasNext()) {
 							str = scan.next();
 							if (str.equals(passwd)) {
+								usrStr=usrField.getText();
 								NoteFrame note =new NoteFrame();
 								note.setTitle("含羞草专属日记本");
 							
@@ -176,4 +178,7 @@ public class Login extends JFrame implements ActionListener {
 		passwdField.setText("");
 		return;
 }
+	public static String getUser(){
+		return usrStr;
+	}
 }

@@ -97,7 +97,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	private JRadioButton musicOn, musicOff,taskOn,taskOff;// 背景音乐开关
 	private JComboBox<String> day, wether;// 时间,天气选择下拉列表.
 
-	private File tempfile;// 临时存储文件
+	private File tempfile=null;// 临时存储文件
 	// 文本是否改变标志
 	private Boolean changed = false;
 	private static UndoManager undoManager = new UndoManager();// 新建可撤销、恢复列表类
@@ -116,13 +116,15 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 				height);
 
 		pack();
+		//先关闭默认操作
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
 				new FileOperator(NoteFrame.this).exit();
 			}
 		});
 
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 
 	}
@@ -240,6 +242,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		currentstatus = new JLabel();
 		status.add(currentstatus);
 		status.setVisible(true);
+		add(status,BorderLayout.SOUTH);
 	}
 
 	void initPanel3() {
