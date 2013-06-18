@@ -115,7 +115,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		setBounds((size.width - width) / 2, (size.height - height) / 2, width,
 				height);
 
-		pack();
+		pack(); 
 		//先关闭默认操作
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {

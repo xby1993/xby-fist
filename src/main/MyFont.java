@@ -24,7 +24,7 @@ import main.MyFont;
 import ui.NoteFrame;
 
 public class MyFont extends JDialog {
-	 /**
+	 /** 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;

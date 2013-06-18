@@ -38,7 +38,7 @@ public class Policy extends JFrame implements ActionListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
-	void init(){
+	void init(){  
 		JPanel panel1=new JPanel();
 		JTextArea textArea=new JTextArea();
 		textArea.setEditable(false);

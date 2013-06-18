@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
 
 public class JJTextArea extends JTextArea {
-
+ 
 	/**
 	 * 
 	 */

@@ -16,7 +16,7 @@ public class JJPanel extends JPanel {
 
 	BufferedImage bufImg;
 	Graphics2D g2d;
-	private Image img;
+	private Image img; 
 	private static String imgPath=" ";
 	public JJPanel(String imgPath) {
 		setImgPath(imgPath);
