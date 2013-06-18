@@ -245,7 +245,7 @@ private class MyListener implements ActionListener
    public void findAll()
    {
      
-   } 
+   }  
    private void replace()
    {
        NoteFrame.getJTextArea().replaceSelection(replacetext.getText());

@@ -23,7 +23,7 @@ public class JJTextArea extends JTextArea {
 	private static String imgPath=" ";
 	public  JJTextArea(String imgPath) {
 		setImgPath(imgPath);
-		this.img=new ImageIcon(imgPath).getImage();
+		this.img=new ImageIcon(imgPath).getImage(); 
 //		Dimension size=new Dimension(img.getWidth(null),img.getHeight(null));
 //		setSize(size);
 //		setPreferredSize(size);

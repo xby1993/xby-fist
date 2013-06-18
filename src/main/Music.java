@@ -23,7 +23,7 @@ public class Music {
 		}
 	public void musicOpen() {
 		try {
-		 	
+		  	
 			aau.play();// 循环播放 aau.play() 单曲 aau.stop()停止播放
 						// //aau.loop();
 		} catch (Exception eee) {

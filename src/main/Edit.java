@@ -19,7 +19,7 @@ public class Edit {
 	 public static void cancel() {
 	 if(NoteFrame.getUndoManager().canUndo())
      {
-         NoteFrame.getUndoManager().undo(); 
+         NoteFrame.getUndoManager().undo();  
      }
 	 }
 	 public static void recover(){

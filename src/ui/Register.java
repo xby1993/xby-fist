@@ -140,7 +140,7 @@ public class Register extends JFrame implements ActionListener{
 						return;
 						
 					}
-					 
+					  
 				}
 				if(!strpasswd.equals(str2)){
 					JOptionPane.showMessageDialog(this, "两次输入密码不同", "警告", JOptionPane.QUESTION_MESSAGE);
