@@ -2,9 +2,9 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -21,6 +21,7 @@ import java.util.TimerTask;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -49,7 +50,6 @@ import javax.swing.undo.UndoManager;
 
 import main.Edit;
 import main.FileOperator;
-import main.FindAndReplace;
 import main.Help;
 import main.Music;
 import main.MyFont;
@@ -62,7 +62,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	 */
 	private static final long serialVersionUID = 1L;
 	private File tempFile;
-
+	private int findnextcount = 0;
 	// 菜单条
 	private JMenuBar menuBar;
 	private String[] jmenuStr = { "文件", "编辑", "搜索", "格式", "帮助" };
@@ -71,7 +71,8 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			{ "撤销", "恢复", "剪切", "复制", "粘贴", "删除", "全选" },
 			{ "查找", "查找下一个", "替换", "转到" }, { "字体" }, { "说明", "关于" } };
 	// 设置快捷键绑定
-	private char[][] shortcut = { { 'N', 'O', 'S', ' ', ' ', ' ', 'P', ' ', 'E' },
+	private char[][] shortcut = {
+			{ 'N', 'O', 'S', ' ', ' ', ' ', 'P', ' ', 'E' },
 			{ 'U', 'Y', 'X', 'C', 'V', 'D', 'A' }, { 'F', 'G', 'R', 'L' },
 			{ ' ' }, { ' ', ' ' } };
 	// 右键菜单
@@ -88,16 +89,17 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	private JToolBar status;
 	private JLabel currentstatus;
 	String statusinfo = "";
-	Timer timer=new Timer();
+	Timer timer = new Timer();
 	private JTextField date;// 日期输入框
-	 String[] imgPathStr = { "src/source/image/1.jpg", "src/source/image/2.jpg",
-			"src/source/image/3.jpg", "src/source/image/4.jpg","src/source/image/5.jpg","src/source/image/6.jpg" };
-	 String imgPath = imgPathStr[4];
+	String[] imgPathStr = { "src/source/image/1.jpg", "src/source/image/2.jpg",
+			"src/source/image/3.jpg", "src/source/image/4.jpg",
+			"src/source/image/5.jpg", "src/source/image/6.jpg" };
+	String imgPath = imgPathStr[4];
 	JPanel panel1, panel2;
-	private JRadioButton musicOn, musicOff,taskOn,taskOff;// 背景音乐开关
+	private JRadioButton musicOn, musicOff, taskOn, taskOff;// 背景音乐开关
 	private JComboBox<String> day, wether;// 时间,天气选择下拉列表.
 
-	private File tempfile=null;// 临时存储文件
+	private File tempfile = null;// 临时存储文件
 	// 文本是否改变标志
 	private Boolean changed = false;
 	private static UndoManager undoManager = new UndoManager();// 新建可撤销、恢复列表类
@@ -108,15 +110,17 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	public NoteFrame() {
 		initBar();
 		initPanel3();
-		
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = size.width / 2;
-		int height = size.height / 2;
-		setBounds((size.width - width) / 2, (size.height - height) / 2, width,
-				height);
 
-		pack();  
-		//先关闭默认操作
+		// Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		// int width = size.width / 2;
+		// int height = size.height / 2;
+		// setBounds((size.width - width) / 2, (size.height - height) / 2,
+		// width,
+		// height);
+
+		pack();
+		setLocationRelativeTo(null);
+		// 先关闭默认操作
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
@@ -124,7 +128,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			}
 		});
 
-//		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		// setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 
 	}
@@ -161,19 +165,19 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 
 	void initTextArea() {
 		textArea = new JJTextArea(imgPath);
-		 textArea.setFont(new Font("黑体", 20, 20));
-		textArea.setLineWrap(true);// 设置自动换行  
+		textArea.setFont(new Font("黑体", 20, 20));
+		textArea.setLineWrap(true);// 设置自动换行
 		textArea.setWrapStyleWord(true);// 激活断行不断字功能
 		textArea.setEnabled(true);
 		textArea.setVisible(true);
-		textArea.setTabSize(2);//设置tab键大小
+		textArea.setTabSize(2);// 设置tab键大小
 		scrollpane = new JScrollPane(textArea);
 		// scrollpane = new JScrollPane(textArea);
 		// panel1=uii.getPanel(imgPath);
 		textArea.getDocument().addUndoableEditListener(this);// 添加可撤销、恢复编辑监听
 		initPopMenu();
 		textArea.setComponentPopupMenu(pmenu);
-	
+
 		doc = textArea.getDocument();
 		doc.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent de) {
@@ -242,7 +246,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		currentstatus = new JLabel();
 		status.add(currentstatus);
 		status.setVisible(true);
-		add(status,BorderLayout.SOUTH);
+		add(status, BorderLayout.SOUTH);
 	}
 
 	void initPanel3() {
@@ -303,12 +307,13 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	void initPanel2() {
 		// 设置背景的控件
 		// panel2=uii.getPanel(imgPath);
-//		JJPanel.setImgPath(imgPath);
-		panel2 = new JJPanel(imgPath); 
+		// JJPanel.setImgPath(imgPath);
+		panel2 = new JJPanel(imgPath);
 		ButtonGroup setBackground = new ButtonGroup();
 		JRadioButton[] background = new JRadioButton[6];
 		JPanel backPanel = new JPanel();
-		String backgroundName[] = { "背景图片1", "背景图片2", "背景图片3", "背景图片4","背景图片5","背景图片6" };
+		String backgroundName[] = { "背景图片1", "背景图片2", "背景图片3", "背景图片4",
+				"背景图片5", "背景图片6" };
 		Box backgroundBox = Box.createVerticalBox();
 		for (int i = 0; i < background.length; i++) {
 			background[i] = new JRadioButton(backgroundName[i]);
@@ -325,13 +330,13 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 						Font.BOLD, 12), new Color(51, 51, 51)));
 		// 设置音乐的控件
 		JPanel music = new JPanel();
-		JPanel taskPanel=new JPanel();
+		JPanel taskPanel = new JPanel();
 		ButtonGroup musicGroup = new ButtonGroup();
 		ButtonGroup taskGroup = new ButtonGroup();
 		musicOn = new JRadioButton("开");
 		musicOff = new JRadioButton("关");
-		taskOn=new JRadioButton("幻灯片开");
-		taskOff=new JRadioButton("幻灯片关");
+		taskOn = new JRadioButton("幻灯片开");
+		taskOff = new JRadioButton("幻灯片关");
 		musicOn.addItemListener(this);
 		musicOff.addItemListener(this);
 		taskOn.addItemListener(this);
@@ -370,7 +375,153 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		panel2.setVisible(true);
 	}
 
-	@Override
+	void unfind() {
+		JOptionPane.showMessageDialog(this, "查找失败,未找到符合的结果!");
+	}
+
+	void find() {
+		JFrame jfind = new JFrame("查找");
+		JLabel jl2 = new JLabel("请输入要查询的字符串：");
+		final JTextField jtf1 = new JTextField(10);
+		JButton jb1 = new JButton("查找/查下一个");
+		final JRadioButton up = new JRadioButton("向上(U)");
+		final JRadioButton down = new JRadioButton("向下(D)", true);// 默认向下找
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(up);
+		bg.add(down);
+		Box box1 = Box.createHorizontalBox();
+		box1.setBorder(BorderFactory.createTitledBorder("方向"));
+		box1.add(Box.createHorizontalStrut(5));
+		box1.add(up);
+		box1.add(Box.createHorizontalStrut(5));
+		box1.add(down);
+		box1.add(Box.createHorizontalStrut(5));
+		jfind.setLayout(new FlowLayout());
+		jfind.add(jl2);
+		jfind.add(jtf1);
+		jfind.add(box1);
+		jfind.add(jb1);
+		jfind.setSize(400, 200);
+		jfind.setVisible(true);
+		jfind.setLocationRelativeTo(NoteFrame.this);
+
+		jb1.addActionListener(new ActionListener() {// 按钮“查找/查下一个”的监听器方法
+			public void actionPerformed(ActionEvent e) {
+				
+				String sfind = jtf1.getText();
+				String cur = textArea.getText();
+				String find = jtf1.getText();
+				String main = NoteFrame.getJTextArea().getText()
+						.replaceAll("\n", "");
+				int count = 1;
+				int length = main.length() - find.length() + 1;
+				if (length > 0) {
+					int[] start = new int[length];// 标记匹配处开头位置，最多有Length个匹配的开头坐标值
+					for (int i = 0; i < length; i++) {
+						if (main.substring(i, i + find.length()).equals(find)) {
+							// 要记下i的位置
+							start[count] = i;
+							count++;
+						}
+					}
+
+					if (cur.indexOf(sfind) == -1) {
+						unfind();
+					} else if (findnextcount >= count) {
+						findnextcount=0;
+					}else if(findnextcount<count){
+						textArea.setSelectedTextColor(Color.RED);
+						if (up.isSelected()) {
+							NoteFrame.getJTextArea().select(
+									start[count - findnextcount],
+									start[count - findnextcount]
+											+ find.length());
+						} else if (down.isSelected()) {
+							NoteFrame.getJTextArea().select(
+									start[findnextcount],
+									start[findnextcount] + find.length());
+						}
+						if (textArea.getCaretPosition() == cur.length()) {
+							textArea.setCaretPosition(0);
+						}
+						textArea.setSelectionStart(cur.indexOf(sfind,
+								textArea.getCaretPosition()));
+						textArea.setSelectionEnd(cur.indexOf(sfind,
+								textArea.getCaretPosition())
+								+ sfind.length());
+					}
+				}
+				findnextcount++;
+			}
+			
+		});
+	}
+
+	void replace() {// 替换对话框，添加监听器并重写actionPerformed方法
+		JFrame jr = new JFrame("替代");
+		JLabel jl1 = new JLabel("查找：");
+		JLabel jl2 = new JLabel("替换为：");
+		final JTextField jtf1 = new JTextField(10);
+		final JTextField jtf2 = new JTextField(10);
+		JButton jb1 = new JButton("替换/替换下一个");
+		JButton jb2 = new JButton("全部替换");
+		JPanel jp1 = new JPanel();
+		JPanel jp2 = new JPanel();
+		JPanel jp3 = new JPanel();
+		jp1.add(jl1);
+		jp1.add(jtf1);
+		jp2.add(jl2);
+		jp2.add(jtf2);
+		jp3.add(jb1);
+		jp3.add(jb2);
+		jr.setLayout(new GridLayout(3, 1));
+		jr.add(jp1);
+		jr.add(jp2);
+		jr.add(jp3);
+		jr.setSize(400, 200);
+		jr.setLocationRelativeTo(NoteFrame.this);
+		jr.setVisible(true);
+
+		jb1.addActionListener(new ActionListener() {// 逐个替换
+			public void actionPerformed(ActionEvent e) {
+				String sfind = jtf1.getText();
+				String sreplace = jtf2.getText();
+				String cur = textArea.getText();
+				if (cur.indexOf(sfind) == -1) {
+					unfind();
+				} else {
+					if (textArea.getCaretPosition() == cur.length()) {
+						textArea.setCaretPosition(0);
+					}
+					textArea.setSelectionStart(cur.indexOf(sfind,
+							textArea.getCaretPosition()));
+					textArea.setSelectionEnd(cur.indexOf(sfind,
+							textArea.getCaretPosition())
+							+ sfind.length());
+					textArea.replaceSelection(sreplace);
+				}
+			}
+		});
+		jb2.addActionListener(new ActionListener() {// 全部替换
+			public void actionPerformed(ActionEvent e) {
+				while (true) {
+					String sfind = jtf1.getText();
+					String sreplace = jtf2.getText();
+					String cur = textArea.getText();
+					if (cur.indexOf(sfind) == -1) {
+						break;
+					}
+					textArea.setSelectionStart(cur.indexOf(sfind,
+							textArea.getCaretPosition()));
+					textArea.setSelectionEnd(cur.indexOf(sfind,
+							textArea.getCaretPosition())
+							+ sfind.length());
+					textArea.replaceSelection(sreplace);
+				}
+			}
+		});
+	}
+
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		switch (e.getActionCommand()) {
@@ -381,13 +532,15 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			Help.help();
 			break;
 		case "字体":
-			new MyFont(new Font("黑体",20,20),this).showDialog(this);
+			new MyFont(new Font("黑体", 20, 20), this).showDialog(this);
 			break;
 		case "查找":
 		case "查找下一个":
+			find();
+			break;
 		case "替换":
 		case "转到":
-			new FindAndReplace(this).showFindAndReplace(this, "查找");
+			replace();
 			break;
 		case "撤销":
 			Edit.cancel();
@@ -407,7 +560,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		case "删除":
 			new Edit(this).Delete();
 			break;
-			
+
 		case "全选":
 			new Edit(this).SelectAll();
 			break;
@@ -454,15 +607,15 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 				music.musicOpen();
 			} else if (text.equals("关")) {
 				music.musicShut();
-			}else if (text.equals("幻灯片开")) {
+			} else if (text.equals("幻灯片开")) {
 				taskOpen();
-			}else if (text.equals("幻灯片关")) {
+			} else if (text.equals("幻灯片关")) {
 				taskCancel();
-			}else if (text.equals("背景图片1")) {
+			} else if (text.equals("背景图片1")) {
 				imgPath = imgPathStr[0];
-//				JJTextArea.setImgPath(imgPath);
+				// JJTextArea.setImgPath(imgPath);
 				JJPanel.setImgPath(imgPath);
-//				textArea.repaint();
+				// textArea.repaint();
 				panel1.repaint();
 				panel2.repaint();
 			} else if (text.equals("背景图片2")) {
@@ -486,14 +639,14 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 				textArea.repaint();
 				panel2.repaint();
 				panel1.repaint();
-			}else if (text.equals("背景图片5")) {
+			} else if (text.equals("背景图片5")) {
 				imgPath = imgPathStr[4];
 				JJPanel.setImgPath(imgPath);
 				JJTextArea.setImgPath(imgPath);
 				textArea.repaint();
 				panel2.repaint();
 				panel1.repaint();
-			}else if (text.equals("背景图片6")) {
+			} else if (text.equals("背景图片6")) {
 				imgPath = imgPathStr[5];
 				JJPanel.setImgPath(imgPath);
 				JJTextArea.setImgPath(imgPath);
@@ -555,27 +708,28 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		return date.getText() + "   " + day.getSelectedItem() + "   "
 				+ wether.getSelectedItem();
 	}
-	TimerTask task=new TimerTask(){
-		   int i=0;
-		   public void run(){
-			if(i>=6){
-				i=0;
+
+	TimerTask task = new TimerTask() {
+		int i = 0;
+
+		public void run() {
+			if (i >= 6) {
+				i = 0;
 			}
-			imgPath=imgPathStr[i++];
+			imgPath = imgPathStr[i++];
 			JJPanel.setImgPath(imgPath);
 			panel1.repaint();
 			panel2.repaint();
-		 }
-	   };
-   void taskOpen(){
-	   
-	   timer.schedule(task, 10000,10000);
-   }
-   
-   void taskCancel() {
-	   timer.cancel();
-   }
-   
-   
-}
+		}
+	};
 
+	void taskOpen() {
+
+		timer.schedule(task, 10000, 10000);
+	}
+
+	void taskCancel() {
+		timer.cancel();
+	}
+
+}

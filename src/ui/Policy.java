@@ -1,8 +1,6 @@
 package ui;
 
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -21,19 +19,22 @@ import javax.swing.JTextArea;
 
 public class Policy extends JFrame implements ActionListener{
 	/**
-	 * 
+	 *  
 	 */
 	private static final long serialVersionUID = 1L;
+	static Boolean start=true;
 	private Boolean policyB=false;
 	public Policy(){
 		init();
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = size.width / 2;
-		int height = size.height / 2;
-		setBounds((size.width - width) / 2, (size.height - height) / 2, width,
-				height);
-
+/*		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = this.getWidth();
+		int height = this.getHeight();
+//		setBounds(size.width/2 - width / 2, size.height/2 -height/ 2, width,
+//				height);
+		setLocation(size.width/2 - width / 2, size.height/2 - height/ 2);
+ */
 		pack();
+		this.setLocationRelativeTo(null);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
@@ -84,8 +85,13 @@ public class Policy extends JFrame implements ActionListener{
 		switch (e.getActionCommand()) {
 		case "确定":
 			if(policyB){
+				if(start){
+					new Login().setTitle("小白楊日記本-含羞草專版");;
+					this.dispose();
+				}else{
 				new Register().setTitle("小白杨日记本-含羞草专版");
 				this.dispose();
+				}
 			}else{
 				JOptionPane.showMessageDialog(this, "请先勾选同意协议");
 			}

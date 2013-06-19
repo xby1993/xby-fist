@@ -6,9 +6,7 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -57,11 +55,12 @@ public class Login extends JFrame implements ActionListener {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 //		setBounds(500, 200,500,200);
 //		setLocationRelativeTo(null);
-		Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = screensize.width/2;
-        int height = screensize.height/2;
-        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
+//		Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+//        int width = screensize.width/2;
+//        int height = screensize.height/2;
+//        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
 		pack();
+		setLocationRelativeTo(null);
 	    setVisible(true);
  }
 
@@ -132,6 +131,7 @@ public class Login extends JFrame implements ActionListener {
 			return;
 
 		} else if (e.getSource() == register) {
+			Policy.start=false;
 			new Policy();
 			Login.this.setVisible(false);
 			return;

@@ -69,25 +69,7 @@ public class Edit {
 	    {
 	        NoteFrame.getJTextArea().replaceSelection("");//把选中的文字替换为空
 	    }
-	    //实现查找方法
-	    public void Find()
-	    {
-	        FindAndReplace far = new FindAndReplace(frame);
-	        far.showFindAndReplace(frame, "查找");
-	    }
-	    //实现查找下一个方法
-	    public void FindNext()
-	    {
-	        FindAndReplace far = new FindAndReplace(frame);
-	        far.showFindAndReplace(frame, "查找下一个");
-	    }
-	    //实现替换方法
-	    public void Replace()
-	    {
-	        FindAndReplace far = new FindAndReplace(frame);
-	        far.showFindAndReplace(frame, "替换");
-	    }
-	    //实现转到方法
+	   
 	    public void SwitchTo()
 	    {
 	        String [] text = NoteFrame.getJTextArea().getText().split("\n");

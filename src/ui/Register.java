@@ -52,11 +52,12 @@ public class Register extends JFrame implements ActionListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 //		setBounds(500, 300, 500, 300);
 //		setLocationRelativeTo(null);
-        Dimension screensize=Toolkit.getDefaultToolkit().getScreenSize();
-		int width = screensize.width/2;
-        int height = screensize.height/2;
-        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
+//        Dimension screensize=Toolkit.getDefaultToolkit().getScreenSize();
+//		int width = screensize.width/2;
+//        int height = screensize.height/2;
+//        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
 		pack();
+		setLocationRelativeTo(null);
 		
 		setVisible(true);
 	}

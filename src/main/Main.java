@@ -1,6 +1,6 @@
 package main;
 
-import ui.Login;
+import ui.Policy;
 
 public class Main {
 
@@ -10,8 +10,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-	Login login = new Login();
-	login.setTitle("小白楊日記本-含羞草專版");
+		new Policy();
 	}
 
 }
