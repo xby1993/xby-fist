@@ -1,8 +1,6 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -40,7 +38,7 @@ public class Register extends JFrame implements ActionListener{
 	Box baseBox, boxV1, boxV2;
 	JPanel panel;
 	Strings strResource = new Strings();
-	String imgPath=new String("src/source/image/2.jpg");
+	String imgPath=new String("/source/image/2.jpg");
 	private AbstractButton menuItem;
 	private JMenuBar menuBar;
 	private JMenu menu;
@@ -119,7 +117,23 @@ public class Register extends JFrame implements ActionListener{
 			dispose();
 			new Login().setTitle("含羞草专属记事本");
 		}else {
-			File file =new File("src/source/xby.cfg");
+//			File file =new File("src/source/xby.cfg");
+			String path=Login.class.getResource("/").getPath()+"xby";
+			File file=new File(path);
+			
+				if (!file.exists()) {
+					file.mkdir();
+				}
+				file=new File(path+"/xby.cfg");
+				if(!file.exists()){
+					try {
+						file.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			
 			try (Scanner scan = new Scanner(file)){
 				
 				String strpasswd =new String(passwdField.getPassword());
@@ -150,12 +164,12 @@ public class Register extends JFrame implements ActionListener{
 				}
 				RandomAccessFile file1=new RandomAccessFile(file, "rw");
 				file1.seek(file1.length());
-				file1.writeBytes(usr);
+				file1.write(usr.getBytes());
 				file1.writeBytes("  ");
 				file1.writeBytes(strpasswd);
 				file1.writeBytes("  ");
 				file1.close();
-				FileOperator.mkdir("diary/"+usr);
+				FileOperator.mkdir(Register.class.getResource("/").getPath()+usr);
 				JOptionPane.showMessageDialog(this, "注册成功");
 				new Login().setTitle("赶快登陆吧");
 				this.dispose();

@@ -39,7 +39,7 @@ public class FileOperator {
 	}
 
 	public void readTo() {
-		JFileChooser chooser = new JFileChooser("diary/" + Login.getUser());
+		JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath() + Login.getUser());
 		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
@@ -112,16 +112,13 @@ public class FileOperator {
 			if (result == JOptionPane.YES_OPTION) {
 				// 调用保存方法
 				saveFile();
-				frame.setFile();// 新建文档
 				NoteFrame.getJTextArea().setText("");
 				frame.setChanged(false);
 			} else if (result == JOptionPane.NO_OPTION) {
-				frame.setFile();
 				NoteFrame.getJTextArea().setText("");
 				frame.setChanged(false);
 			}
 		} else {
-			frame.setFile();
 			NoteFrame.getJTextArea().setText("");
 			frame.setChanged(false);
 		}
@@ -133,12 +130,12 @@ public class FileOperator {
 			int result = JOptionPane.showConfirmDialog(frame,
 					"文件已经修改，是否保存当前文件？", "询问", JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
-			if (result == 0) {
+			if (result == JOptionPane.YES_OPTION) {
 				// 如果选择保存，则先保存当前文件，再把要打开的文件的文字读入到当前文本框中
 				saveFile();
 				NoteFrame.getJTextArea().setText("");
 				readTo();
-			} else if (result == 1) {
+			} else if (result == JOptionPane.NO_OPTION) {
 				NoteFrame.getJTextArea().setText("");
 				readTo();
 			}
@@ -153,7 +150,7 @@ public class FileOperator {
 	public void saveFile() {
 		File file=null;
 		if(frame.getTempFile()==null){
-			JFileChooser chooser = new JFileChooser("diary/" +Login.getUser());
+			JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath() +Login.getUser());
 			chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(
 					"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
@@ -176,7 +173,7 @@ public class FileOperator {
 
 	// 实现文件另存为
 	public void saveasFile() {
-		JFileChooser chooser = new JFileChooser("diary/"+Login.getUser());
+		JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath()+Login.getUser());
 		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名

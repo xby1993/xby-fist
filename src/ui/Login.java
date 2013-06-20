@@ -46,25 +46,26 @@ public class Login extends JFrame implements ActionListener {
 	Box baseBox, boxV1, boxV2;
 	JPanel panel;
 	Strings strResource = new Strings();
-	String imgPath = new String("src/source/image/2.jpg");
+	String imgPath = new String("/source/image/2.jpg");
 	private static String usrStr;
+
 	public Login() {
 		initMenuBar();
 		initBox();
-//		setLayout(new BorderLayout());
+		// setLayout(new BorderLayout());
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		setBounds(500, 200,500,200);
-//		setLocationRelativeTo(null);
-//		Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
-//        int width = screensize.width/2;
-//        int height = screensize.height/2;
-//        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
+		// setBounds(500, 200,500,200);
+		// setLocationRelativeTo(null);
+		// Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+		// int width = screensize.width/2;
+		// int height = screensize.height/2;
+		// setBounds((screensize.width-width)/2, (screensize.height-height)/2,
+		// width, height);
 		pack();
 		setLocationRelativeTo(null);
-	    setVisible(true);
- }
+		setVisible(true);
+	}
 
-	
 	/**
 	 * @param void
 	 * @return void
@@ -81,7 +82,7 @@ public class Login extends JFrame implements ActionListener {
 
 	/**
 	 * @param void
-	 * @return void 
+	 * @return void
 	 */
 	private void initBox() {
 		label0 = new JLabel("含羞草童鞋,欢迎你使用小白杨日记本含羞草专版");
@@ -96,8 +97,8 @@ public class Login extends JFrame implements ActionListener {
 		logIn.addActionListener(this);
 		register.addActionListener(this);
 
-//		panel=new UIInterface().getPanel(imgPath)
-		panel=new JJPanel(imgPath);
+		// panel=new UIInterface().getPanel(imgPath)
+		panel = new JJPanel(imgPath);
 		panel.setLayout(new FlowLayout());
 		baseBox = Box.createHorizontalBox();
 		boxV1 = Box.createVerticalBox();
@@ -112,17 +113,18 @@ public class Login extends JFrame implements ActionListener {
 		boxV2.add(passwdField);
 		boxV2.add(Box.createVerticalStrut(35));
 		boxV2.add(register);
-		add(label0,BorderLayout.NORTH);
+		add(label0, BorderLayout.NORTH);
 		baseBox.add(boxV1);
 		baseBox.add(Box.createHorizontalStrut(20));
 		baseBox.add(boxV2);
 		panel.add(baseBox);
-		add(panel,BorderLayout.CENTER);
-		
+		add(panel, BorderLayout.CENTER);
+
 	}
 
-	/* 
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/*
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == menuItem) {
@@ -131,7 +133,7 @@ public class Login extends JFrame implements ActionListener {
 			return;
 
 		} else if (e.getSource() == register) {
-			Policy.start=false;
+			Policy.start = false;
 			new Policy();
 			Login.this.setVisible(false);
 			return;
@@ -140,45 +142,59 @@ public class Login extends JFrame implements ActionListener {
 			String passwd = new String(passwdField.getPassword());
 			// 检查用户是否存在
 			// 检查文件释放存在
-			File file = new File("src/source/xby.cfg");
-			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+//			System.out.println(Login.class.getResource("/"));
+			String path=Login.class.getResource("/").getPath()+"xby";
+			File file=new File(path);
+//			File file;
+//				String filePath=;
+//				System.out.println(filePath);
+//				file = new File(Login.class.getResource("/source/xby.cfg").getFile());
+			
+				if (!file.exists()) {
+					file.mkdir();
 				}
-			}
-			// 读取密码用户文件
-			String str;
-			try (Scanner scan = new Scanner(file)) {
-				while (scan.hasNext()) {
-					str = scan.next();
-					if (str.equals(usrname)) {
-						if (scan.hasNext()) {
-							str = scan.next();
-							if (str.equals(passwd)) {
-								usrStr=usrField.getText();
-								NoteFrame note =new NoteFrame();
-								note.setTitle("含羞草专属日记本");
-							
-								this.dispose();
-								return;
-						}
-						 } 
+				file=new File(path+"/xby.cfg");
+				if(!file.exists()){
+					try {
+						file.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-	}
-		JOptionPane.showMessageDialog(this, "不存在此用户或密码错误，请先注册或重新输入",
-				"错误", JOptionPane.WARNING_MESSAGE);
+				// 读取密码用户文件
+				String str;
+				try (Scanner scan = new Scanner(file)) {
+					while (scan.hasNext()) {
+						str = scan.next();
+						if (str.equals(usrname)) {
+							if (scan.hasNext()) {
+								str = scan.next();
+								if (str.equals(passwd)) {
+									usrStr = usrField.getText();
+									NoteFrame note = new NoteFrame();
+									note.setTitle("含羞草专属日记本");
+
+									this.dispose();
+									return;
+								}
+							}
+						}
+					}
+				} catch (Exception ioe) {
+					ioe.printStackTrace();
+				}
+			
+		}
+		JOptionPane.showMessageDialog(this, "不存在此用户或密码错误，请先注册或重新输入", "错误",
+				JOptionPane.WARNING_MESSAGE);
 		usrField.setText("");
 		passwdField.setText("");
 		return;
-}
-	public static String getUser(){
+	}
+
+	public static String getUser() {
 		return usrStr;
 	}
+	
 }

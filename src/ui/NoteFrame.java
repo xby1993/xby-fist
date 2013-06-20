@@ -13,7 +13,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -91,10 +90,10 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	String statusinfo = "";
 	Timer timer = new Timer();
 	private JTextField date;// 日期输入框
-	String[] imgPathStr = { "src/source/image/1.jpg", "src/source/image/2.jpg",
-			"src/source/image/3.jpg", "src/source/image/4.jpg",
-			"src/source/image/5.jpg", "src/source/image/6.jpg" };
-	String imgPath = imgPathStr[4];
+	String[] imgPathStr = { "/source/image/1.jpg", "/source/image/2.jpg",
+			"/source/image/3.jpg", "/source/image/4.jpg",
+			"/source/image/5.jpg", "/source/image/6.jpg" };
+	String imgPath = imgPathStr[2];
 	JPanel panel1, panel2;
 	private JRadioButton musicOn, musicOff, taskOn, taskOff;// 背景音乐开关
 	private JComboBox<String> day, wether;// 时间,天气选择下拉列表.
@@ -310,7 +309,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		// JJPanel.setImgPath(imgPath);
 		panel2 = new JJPanel(imgPath);
 		ButtonGroup setBackground = new ButtonGroup();
-		JRadioButton[] background = new JRadioButton[6];
+		background = new JRadioButton[6];
 		JPanel backPanel = new JPanel();
 		String backgroundName[] = { "背景图片1", "背景图片2", "背景图片3", "背景图片4",
 				"背景图片5", "背景图片6" };
@@ -688,17 +687,6 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 		this.changed = changed;
 	}
 
-	public void setFile() {
-		tempfile = new File("diary/" + Register.getUsr());
-		try {
-			tempfile.createNewFile();
-		} catch (IOException ex) {
-			JOptionPane.showMessageDialog(this, "新建文本文档失败！");
-		}
-
-		this.setTitle(tempfile.getName());
-
-	}
 
 	void backgroundChange(String text) {
 
@@ -722,6 +710,7 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 			panel2.repaint();
 		}
 	};
+	private JRadioButton[] background;
 
 	void taskOpen() {
 
@@ -731,5 +720,6 @@ public class NoteFrame extends JFrame implements UndoableEditListener,
 	void taskCancel() {
 		timer.cancel();
 	}
+	
 
 }

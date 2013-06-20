@@ -24,6 +24,8 @@ public class Policy extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	static Boolean start=true;
 	private Boolean policyB=false;
+	String imgPath = new String("/source/image/login.jpg");
+	
 	public Policy(){
 		init();
 /*		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -39,14 +41,14 @@ public class Policy extends JFrame implements ActionListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
-	void init(){  
-		JPanel panel1=new JPanel();
+	void init(){ 
+		JPanel panel1=new JJPanel(imgPath);
 		JTextArea textArea=new JTextArea();
 		textArea.setEditable(false);
-		ImageIcon img=new ImageIcon("src/source/image/lazy.jpg");
+		ImageIcon img=new ImageIcon(Policy.class.getResource("/source/image/lazy.jpg"));
 		JLabel label1=new JLabel(img);
 	
-		String str="1.你是一个小胖子!\n"+"2.你是一个傻瓜\n"+"3.你是杨宝宝\n"+"4.你爱小白杨\n"+"5.你会一直报告此软件BUG"+
+		String str="1.你是一个小胖子!\n"+"2.你是一个傻瓜\n"+"3.你是杨宝宝\n"+"4.你爱小白杨\n"+"5.你会一直报告此软件BUG\n"+
 				"6.这属于商业机密,你保证不会泄密\n"+"7.如若违反上述协议,自愿承担相应法律责任";
 		textArea.append(str);
 		textArea.setOpaque(false);
@@ -55,8 +57,9 @@ public class Policy extends JFrame implements ActionListener{
 		box.add(label1); 
 		box.add(Box.createVerticalStrut(30));
 		box.add(textArea);
-		box.add(Box.createVerticalStrut(100));
+		box.add(Box.createVerticalStrut(30));
 		JCheckBox check=new JCheckBox("我自愿同意以上协议,自愿承担相应法律责任");
+//		check.setOpaque(false);
 		check.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
 				if(ie.getStateChange()==ItemEvent.SELECTED){

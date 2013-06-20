@@ -27,7 +27,7 @@ public class JJPanel extends JPanel {
 //		setMaximumSize(size);
 	}
 	public void paintComponent(Graphics g) {
-		img=new ImageIcon(getImgPath()).getImage();
+		img=new ImageIcon(JJPanel.class.getResource(getImgPath())).getImage();
 	setOpaque(false);// 设置false以便于设置背景
 	// 启用图像缓存设置好图像。
 	bufImg = new BufferedImage(img.getWidth(null),
@@ -63,4 +63,5 @@ public class JJPanel extends JPanel {
 	public static void setImgPath(String imgPath) {
 		JJPanel.imgPath = imgPath;
 	}
+
 }
