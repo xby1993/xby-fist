@@ -3,12 +3,13 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Scanner;
-
+import java.util.Properties;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -21,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import main.FileOperator;
 
@@ -38,25 +40,19 @@ public class Register extends JFrame implements ActionListener{
 	Box baseBox, boxV1, boxV2;
 	JPanel panel;
 	Strings strResource = new Strings();
-	String imgPath=new String("/source/image/2.jpg");
+	String imgPath=strResource.getREGISTER_IMG();
 	private AbstractButton menuItem;
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private static String usr;
+	private boolean exist=false;
 	public Register() {
 		initMenuBar();
 		initBox();
-//		setLayout(new BorderLayout());
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		setBounds(500, 300, 500, 300);
-//		setLocationRelativeTo(null);
-//        Dimension screensize=Toolkit.getDefaultToolkit().getScreenSize();
-//		int width = screensize.width/2;
-//        int height = screensize.height/2;
-//        setBounds((screensize.width-width)/2, (screensize.height-height)/2, width, height);
 		pack();
 		setLocationRelativeTo(null);
-		
+		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 	void initMenuBar(){
@@ -118,13 +114,10 @@ public class Register extends JFrame implements ActionListener{
 			new Login().setTitle("含羞草专属记事本");
 		}else {
 //			File file =new File("src/source/xby.cfg");
-			String path=Login.class.getResource("/").getPath()+"xby";
+			String path=strResource.getPasswdPath();
+//			String path=Login.class.getResource("/").getPath()+"xby";
 			File file=new File(path);
-			
-				if (!file.exists()) {
-					file.mkdir();
-				}
-				file=new File(path+"/xby.cfg");
+		
 				if(!file.exists()){
 					try {
 						file.createNewFile();
@@ -133,53 +126,97 @@ public class Register extends JFrame implements ActionListener{
 						e1.printStackTrace();
 					}
 				}
-			
-			try (Scanner scan = new Scanner(file)){
-				
-				String strpasswd =new String(passwdField.getPassword());
-				String str2=new String(repeatField.getPassword());
-				usr = new String(usrField.getText());
-				String str ="";
-				if(!file.exists()){
-					file.createNewFile();
+			Properties props =new Properties();
+			try {
+				props.load(new BufferedReader(new FileReader(file)));
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			String strpasswd =new String(passwdField.getPassword());
+			String str2=new String(repeatField.getPassword());
+			usr = new String(usrField.getText());
+			if(usr.length()<1||strpasswd.length()<1){
+				JOptionPane.showMessageDialog(this, "请输入完整信息");
+				return;
+			}
+			for(String usrStr:props.stringPropertyNames()){
+				if(usrStr.equals(usr)){
+					JOptionPane.showMessageDialog(this, "用戶已經存在");
+					usrField.setText("");
+					exist = true;
+					break;
 				}
-				if(usr.length()<1||strpasswd.length()<1){
-					JOptionPane.showMessageDialog(this, "请输入完整信息");
-					return;
-				}
-				while(scan.hasNext()){
-					str=scan.next();
-					if(str.equals(usr)) {
-						JOptionPane.showMessageDialog(this, "用戶已經存在");
-						usrField.setText("");
-						return;
-						
-					}
-					  
-				}
+			}
+			if(!exist){
 				if(!strpasswd.equals(str2)){
 					JOptionPane.showMessageDialog(this, "两次输入密码不同", "警告", JOptionPane.QUESTION_MESSAGE);
 					passwdField.setText("");
 					repeatField.setText("");
+				}else{
+					props.setProperty(usr, strpasswd);
+					try {
+						props.store(new BufferedWriter(new FileWriter(file)), "用户注册登记文件");
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					File fileUser=new File(Register.class
+							.getResource("/").getPath() + usr);
+					if(!fileUser.exists()){
+						fileUser.mkdir();
+					}
+					JOptionPane.showMessageDialog(this, "注册成功");
+					new Login().setTitle("赶快登陆吧");
+					this.dispose();
 				}
-				RandomAccessFile file1=new RandomAccessFile(file, "rw");
-				file1.seek(file1.length());
-				file1.write(usr.getBytes());
-				file1.writeBytes("  ");
-				file1.writeBytes(strpasswd);
-				file1.writeBytes("  ");
-				file1.close();
-				FileOperator.mkdir(Register.class.getResource("/").getPath()+usr);
-				JOptionPane.showMessageDialog(this, "注册成功");
-				new Login().setTitle("赶快登陆吧");
-				this.dispose();
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+//			try (Scanner scan = new Scanner(file)){
+//				
+//				String strpasswd =new String(passwdField.getPassword());
+//				String str2=new String(repeatField.getPassword());
+//				usr = new String(usrField.getText());
+//				String str ="";
+//				if(!file.exists()){
+//					file.createNewFile();
+//				}
+//				if(usr.length()<1||strpasswd.length()<1){
+//					JOptionPane.showMessageDialog(this, "请输入完整信息");
+//					return;
+//				}
+//				while(scan.hasNext()){
+//					str=scan.next();
+//					if(str.equals(usr)) {
+//						JOptionPane.showMessageDialog(this, "用戶已經存在");
+//						usrField.setText("");
+//						return;
+//						
+//					}
+//					  
+//				}
+//				if(!strpasswd.equals(str2)){
+//					JOptionPane.showMessageDialog(this, "两次输入密码不同", "警告", JOptionPane.QUESTION_MESSAGE);
+//					passwdField.setText("");
+//					repeatField.setText("");
+//				}
+//				RandomAccessFile file1=new RandomAccessFile(file, "rw");
+//				file1.seek(file1.length());
+//				file1.write(usr.getBytes());
+//				file1.writeBytes("  ");
+//				file1.writeBytes(strpasswd);
+//				file1.writeBytes("  ");
+//				file1.close();
+////				FileOperator.mkdir(Register.class.getResource("/").getPath()+usr);
+//				JOptionPane.showMessageDialog(this, "注册成功");
+//				new Login().setTitle("赶快登陆吧");
+//				this.dispose();
+//			} catch (FileNotFoundException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
 		}
 	}
 	public static String getUsr() {

@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 public class Help {
 	
 	public static void about(){
-	String about="小白杨出品"+"\n"+"版本:1.0"+"\n"+"BUG反馈:xby309778901@126.com\n"+"版权:2013-";
+	String about="小白杨出品"+"\n"+"版本:beta4.5.0"+"\n"+"BUG反馈:xby309778901@126.com\n"+"版权:2013-";
 	JOptionPane.showMessageDialog(null,about, "关于" ,JOptionPane.PLAIN_MESSAGE);
 	}
 	public static void help(){
@@ -40,7 +40,6 @@ public class Help {
 				+"\n(6)搜索:可以向两个方向搜索,可以进行替换等"
 				+"\n(7)集成自由背景切换,自动和手动均可.背景音乐播放,但有一定问题,将在下一版本修复."
 				+"\n(8)自动化添加日期和天气";
-		
 		JOptionPane.showMessageDialog(null,manual, "使用手册" ,JOptionPane.PLAIN_MESSAGE);
 	}
 }

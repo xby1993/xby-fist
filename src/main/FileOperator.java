@@ -1,98 +1,150 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
 
 import ui.Login;
 import ui.NoteFrame;
 
 public class FileOperator {
 	private NoteFrame frame;
+//	private HTMLDocument doc;
+//	private HTMLEditorKit editorKit;
+	private File tfile;
+	String defaultPath = FileOperator.class.getResource("/").getPath()
+			+ Login.getUser();
+	private File savefile;
+	private File openfile;
+//	private File savefile;
 
 	public FileOperator(NoteFrame frame) {
 		this.frame = frame;
-	}
-
-	// 实现把目标文本内容读到当前文本框中的方法，需要把被打开的文件的路径保存下来
-	public static void mkdir(String filepath) {
-		File file=null;
-		try {
-			file = new File(filepath);
-			if (!file.exists()) {
-				file.mkdirs();
-			}  
-
-		} catch (Exception e) {
-			
-		}finally{
-			file=null;
+//		doc = (HTMLDocument) frame.getMyDocument();
+//		editorKit = (HTMLEditorKit) frame.getJTextPane().getEditorKit();
+		File path = new File(defaultPath);
+		if (!path.exists()) {
+			path.mkdir();
 		}
 	}
 
 	public void readTo() {
-		JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath() + Login.getUser());
-		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
+		JFileChooser chooser = new JFileChooser(defaultPath);
+		// chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
+				"HTML & html文件", "HTML", "html");// 设置可选文件后缀名
 		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
 		chooser.setFileFilter(filter);
-		while (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			// 此时文件肯定是.txt格式或者.TXT格式的，因此不需要再判断后缀名了,只需要判断是否选择了文档文件
 			File file = chooser.getSelectedFile();
-			frame.setTempFile(file);// 保存当前打开的文件的路径
+//			frame.setTempFile(file);// 保存当前打开的文件的路径
 			if (file.exists()) {
 				frame.setTitle(file.getName());
-				try {
-					BufferedReader reader = new BufferedReader(new FileReader(
-							file.getAbsoluteFile()));
-					try {
-						String tmp = reader.readLine();
-						while (tmp != null) {
-							NoteFrame.getJTextArea().append(tmp + "\n");
-							tmp = reader.readLine();
-						}
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog(frame, "读取文件失败！");
-					}
-
-					// 读出来
-				} catch (FileNotFoundException ex) {
-					JOptionPane.showMessageDialog(frame, "获取文件路径失败！");
-				}
-				break;
+				frame.tabAdd();
+//				BufferedReader bufin = new BufferedReader(new FileReader(file));
+//				try {
+//					frame.getJTextPane().getEditorKit()
+//							.read(bufin, frame.getMyDocument(), 0);
+//					bufin.close();
+//				} catch (IOException | BadLocationException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				open(file);
 			}
+
 		}
 		// 成功读取文件之后让changed初始值为false
-		frame.setChanged(false);
+		frame.setChanged(false); 
 	}
+	void open(File file){
+		openfile = file;
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				try {
+					FileInputStream in = new FileInputStream(openfile);
+					ObjectInputStream input = new ObjectInputStream(in);
+					HTMLDocument doc=(HTMLDocument) input.readObject();
+					doc.addUndoableEditListener(new UndoableEditListener() {
+					
+					@Override
+					public void undoableEditHappened(UndoableEditEvent e) {
+						// TODO Auto-generated method stub
+						frame.getUndoManager().addEdit(e.getEdit());
+					}
+				});// 添加可撤销、恢复编辑监听
+					frame.getDocList().set(frame.getSelectTabIndex(),doc);
+					frame.getJTextPane().setDocument(frame.getMyDocument());
+//					frame.htmldoc=doc;
+//					frame.textPane.setDocument(frame.htmldoc);
+					input.close();
+					in.close();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e2) {
+					e2.printStackTrace();
+
+				} 
+			}
+		});
+	}
 	// 实现把当前文本框的文字写入到目标路径下的方法
 	public Boolean writeBack(File file) {
+		tfile = file;
+		// try {
+		// BufferedWriter bufout = new BufferedWriter(new FileWriter(tfile));
+		// editorKit.write(bufout, doc, 0, doc.getEndPosition().getOffset());
+		// bufout.close();
+	
 		try {
-			file.createNewFile();
-			FileWriter writer = new FileWriter(file);
-			BufferedWriter bufferwriter = new BufferedWriter(writer);
-			bufferwriter.write(frame.getDate());
-			bufferwriter.newLine();
-			bufferwriter.write(NoteFrame.getJTextArea().getText());
-			bufferwriter.flush();
-			bufferwriter.close();
-			writer.close();
-			frame.setChanged(false);// 回写一次之后，此时当前文本没有被修改
-			return true;
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(frame, "保存文件失败！");
-			return false;
+				frame.getJTextPane().getDocument().insertString(0, frame.getDate() + "\n", null);
+			
+			FileOutputStream out = new FileOutputStream(tfile);
+			ObjectOutputStream output = new ObjectOutputStream(out);
+//			output.writeObject(frame.htmldoc);
+			output.writeObject(frame.getJTextPane().getDocument());
+			output.flush();
+			output.close();
+			out.close();
+//			frame.textPane.setText("");
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+//		}catch (BadLocationException e) {
+			// // TODO Auto-generated catch block
+//			e.printStackTrace();
+		}catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		frame.getJTextPane().setText("");
+		// writer.close();
+
+		frame.setChanged(false);// 回写一次之后，此时当前文本没有被修改
+		return true;
+
 	}
 
 	// 实现删除文件
@@ -105,115 +157,140 @@ public class FileOperator {
 
 	// 实现新建文件
 	public void createFile() {
-		if (frame.getChanged()) {
-			int result = JOptionPane.showConfirmDialog(frame,
-					"文件已经修改，是否保存当前文件？", "询问", JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				// 调用保存方法
-				saveFile();
-				NoteFrame.getJTextArea().setText("");
-				frame.setChanged(false);
-			} else if (result == JOptionPane.NO_OPTION) {
-				NoteFrame.getJTextArea().setText("");
-				frame.setChanged(false);
-			}
-		} else {
-			NoteFrame.getJTextArea().setText("");
-			frame.setChanged(false);
-		}
+//		if (frame.getChanged()) {
+//			int result = JOptionPane.showConfirmDialog(frame,
+//					"文件已经修改，是否保存当前文件？", "询问", JOptionPane.YES_NO_CANCEL_OPTION,
+//					JOptionPane.QUESTION_MESSAGE);
+//			if (result == JOptionPane.YES_OPTION) {
+//				// 调用保存方法
+//				saveFile();
+//				frame.getJTextPane().setText("");
+//				frame.setChanged(false);
+//			} else if (result == JOptionPane.NO_OPTION) {
+//				frame.getJTextPane().setText("");
+//				frame.setChanged(false);
+//			}
+//		} else {
+//			frame.getJTextPane().setText("");
+//			frame.setChanged(false);
+//		}
+		frame.tabAdd();
 	}
 
 	// 实现打开文件
 	public void openFile() {
-		if (frame.getChanged()) {
-			int result = JOptionPane.showConfirmDialog(frame,
-					"文件已经修改，是否保存当前文件？", "询问", JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				// 如果选择保存，则先保存当前文件，再把要打开的文件的文字读入到当前文本框中
-				saveFile();
-				NoteFrame.getJTextArea().setText("");
-				readTo();
-			} else if (result == JOptionPane.NO_OPTION) {
-				NoteFrame.getJTextArea().setText("");
-				readTo();
-			}
-		} else {
-			// 如果当前文件没有修改，则直接打开目标文件
-			NoteFrame.getJTextArea().setText("");
-			readTo();
-		}
+		
+		/*
+		 * if (frame.getChanged()) { int result =
+		 * JOptionPane.showConfirmDialog(frame, "文件已经修改，是否保存当前文件？", "询问",
+		 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE); if
+		 * (result == JOptionPane.YES_OPTION) { //
+		 * 如果选择保存，则先保存当前文件，再把要打开的文件的文字读入到当前文本框中 saveFile();
+		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * (FileNotFoundException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } } else if (result == JOptionPane.NO_OPTION) {
+		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * (FileNotFoundException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } } } else { // 如果当前文件没有修改，则直接打开目标文件
+		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * (FileNotFoundException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); } }
+		 */
 	}
 
 	// 实现保存文件
-	public void saveFile() {
-		File file=null;
-		if(frame.getTempFile()==null){
-			JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath() +Login.getUser());
-			chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(
-					"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
-			chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
-			chooser.setFileFilter(filter);
-			int reback=chooser.showSaveDialog(frame);
-			if(reback==JFileChooser.APPROVE_OPTION){
-				file=chooser.getSelectedFile();
-				writeBack(file);
-			}else{
-				return;
+	public void save(File file) {
+		savefile = file;
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				writeBack(savefile);
+
 			}
-		}else{file=frame.getTempFile();
-			writeBack(file);
-		}
-		
-		int length = NoteFrame.getJTextArea().getText().length();
-		NoteFrame.getJTextArea().setCaretPosition(length);
+		});
 	}
 
-	// 实现文件另存为
-	public void saveasFile() {
-		JFileChooser chooser = new JFileChooser(FileOperator.class.getResource("/").getPath()+Login.getUser());
-		chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"txt & TXT文本文件", "txt", "TXT");// 设置可选文件后缀名
-		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
-		chooser.setFileFilter(filter);
-		while (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			// 获得后缀名，从.开始到结束(lastIndexOf(".")返回.在字符串中最后一次出现的坐标值，而subString(int
-			// beginIndex))
-			String str = file.getName().substring(
-					file.getName().lastIndexOf("."));
-			if (str.equals(".txt") || str.equals(".TXT")) {
+	public void saveFile() {
+
+		File file ;
+//		if (frame.getTempFile() == null) {
+			JFileChooser chooser = new JFileChooser(defaultPath);
+			chooser.setSelectedFile(new File("*.html"));// 设置默认选中文件名称
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					"html & HTML文件", "html", "HTML");// 设置可选文件后缀名
+			chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
+			chooser.setFileFilter(filter);
+			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+				file = chooser.getSelectedFile();
 				if (file.exists()) {
-					int result = JOptionPane.showConfirmDialog(frame,
-							"文件已存在，是否覆盖文件？", "询问", JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-					if (result == JOptionPane.YES_OPTION) {
-						// 先删除该目录下的原文件，再新建一个同名的文件，最后写入内容
-						file.delete();
-						if (writeBack(file)) {
-							NoteFrame.getJTextArea().setText("");// 清空数据
-							break; // 关闭窗口
-						}
+					int confirm = JOptionPane.showConfirmDialog(null,
+							"是否覆盖已有文件？");
+					if (confirm == JOptionPane.YES_OPTION){
+						
+//						writeBack(file);
+						save(file);
+					}else{
+						return;
 					}
 				} else {
-					if (writeBack(file)) {
-						NoteFrame.getJTextArea().setText("");// 清空数据
-						break;
+					/* writeBack(file); */
+					try {
+						file.createNewFile();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+//					writeBack(file);
+					save(file);
 				}
-			} else {
-				JOptionPane.showMessageDialog(frame,
-						"您输入的文件名格式不对，为了您能正常打开文件，请重新输入！");
-			}
-		}
-		// 保存之后修改标题
-		frame.setTitle("含羞草专属记事本");
-		// 修改changed为false
-		frame.setChanged(false);
+			} 
+//		} else {
+//			file = frame.getTempFile();
+//			writeBack(file);
+//		}
+
+//		int length = doc.getLength();
+//		frame.getJTextPane().setCaretPosition(length);
 	}
+
+//	// 实现文件另存为
+//	public void saveasFile() {
+//		JFileChooser chooser = new JFileChooser(defaultPath);
+//		chooser.setSelectedFile(new File("*.html"));// 设置默认选中文件名称
+//		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//				"html & HTML文件", "html", "HTML");// 设置可选文件后缀名
+//		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
+//		chooser.setFileFilter(filter);
+//		if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+//			File file = chooser.getSelectedFile();
+//			// 获得后缀名，从.开始到结束(lastIndexOf(".")返回.在字符串中最后一次出现的坐标值，而subString(int
+//			// beginIndex))
+//			String str = file.getName().substring(
+//					file.getName().lastIndexOf("."));
+//			if (str.equals(".html") || str.equals(".HTML")) {
+//				if (file.exists()) {
+//					int result = JOptionPane.showConfirmDialog(frame,
+//							"文件已存在，是否覆盖文件？", "询问", JOptionPane.YES_NO_OPTION,
+//							JOptionPane.QUESTION_MESSAGE);
+//					if (result == JOptionPane.YES_OPTION) {
+//						// 先删除该目录下的原文件，再新建一个同名的文件，最后写入内容
+//						// writeBack(file);
+//						save(file);
+//						// frame.getJTextPane().setText("");// 清空数据
+//					}
+//				} else {
+//					// writeBack(file);
+//					save(file);
+//				}
+//			} else {
+//				JOptionPane.showMessageDialog(frame,
+//						"您输入的文件名格式不对，为了您能正常打开文件，请重新输入！");
+//			}
+//		}
+//		// 保存之后修改标题
+//		frame.setTitle("含羞草专属记事本");
+//		// 修改changed为false
+//		frame.setChanged(false);
+//	}
 
 	// 实现页面设置方法
 	public void pageSetup() {
@@ -232,7 +309,7 @@ public class FileOperator {
 	}
 
 	// 实现退出方法
-	public  void exit() {
+	public void exit() {
 		if (frame.getChanged() == true) {
 			int result = JOptionPane.showConfirmDialog(null,
 					"文件已经修改，是否在退出之前保存文件？", "询问",
@@ -248,11 +325,12 @@ public class FileOperator {
 				System.exit(0);
 			}
 		} else {
-			int result = JOptionPane.showConfirmDialog(null, "确定要退出吗?"," ",JOptionPane.YES_NO_OPTION);
+			int result = JOptionPane.showConfirmDialog(null, "确定要退出吗?", " ",
+					JOptionPane.YES_NO_OPTION);
 			if (result == JOptionPane.YES_OPTION) {
 				frame.dispose();
 				System.exit(0);
-			}else{
+			} else {
 				return;
 			}
 		}

@@ -20,7 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import main.MyFont;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
 import ui.NoteFrame;
 
 public class MyFont extends JDialog {
@@ -31,7 +33,7 @@ public class MyFont extends JDialog {
 	private NoteFrame mf;
 	    private Box box;
 	    private JTextField fonttext;//字体文本框
-	    private JTextField styletext;//字形文本框
+//	    private JTextField styletext;//字形文本框
 	    private JTextField sizetext;//字体大小文本框
 	    private JList<String> fontlist;//字体选择列表
 	    private JList<String> stylelist;//字形选择列表
@@ -40,7 +42,7 @@ public class MyFont extends JDialog {
 	    private JRadioButton chinaview;//中文预览
 	    private JRadioButton westview;//西文预览
 	    private JRadioButton numberview;//数字预览
-	    private String Chinese = "小小记事本";
+	    private String Chinese = "日记本";
 	    private String English = "NotePad";
 	    private String Number = "0123456789";
 	    private JButton ensure;//确定按钮
@@ -52,13 +54,11 @@ public class MyFont extends JDialog {
 	    //所有字体
 	    private String [] fontarray;
 	    //所有字形
-	    private String [] stylearray = {"常规","斜体","粗体","粗斜体"};
+//	    private String [] stylearray = {"常规","斜体","粗体","粗斜体"};
 	    //所有字体大小
-	    private String [] sizearray = {"8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72",
-	        "初号","小号","一号","小一","二号","小二","三号","小三","四号","小四","五号","小五","六号","小六","七号","八号"};
+	    private String [] sizearray = {"8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72"};
 	    //所有字体大小对应的数值
-	    private int [] sizeofint = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72, 
-	        42, 36, 26, 24, 22, 18, 16, 15, 14, 12, 10, 9, 8, 7, 6, 5};
+	    private int [] sizeofint = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
 	    public MyFont()
 	    {
 	    }
@@ -82,9 +82,9 @@ public class MyFont extends JDialog {
 	        fonttext = new JTextField("Fixedsys");
 	        fonttext.setEditable(false);
 	        fonttext.setBackground(Color.WHITE);
-	        styletext = new JTextField("常规");
-	        styletext.setEditable(false);
-	        styletext.setBackground(Color.WHITE);
+//	        styletext = new JTextField("常规");
+//	        styletext.setEditable(false);
+//	        styletext.setBackground(Color.WHITE);
 	        sizetext = new JTextField("12");
 	        sizetext.setEditable(false);
 	        sizetext.setBackground(Color.WHITE);
@@ -102,7 +102,7 @@ public class MyFont extends JDialog {
 	        viewselect.add(westview);
 	        viewselect.add(numberview);
 	        fontlist = new JList<String>(fontarray);
-	        stylelist = new JList<String>(stylearray);
+//	        stylelist = new JList<String>(stylearray);
 	        sizelist = new JList<String>(sizearray);
 	        ensure = new JButton("确定");
 	        cancel = new JButton("取消");
@@ -116,7 +116,7 @@ public class MyFont extends JDialog {
 	        fontbox.add(fontscrp);
 	        Box stylebox = Box.createVerticalBox();
 	        stylebox.setBorder(BorderFactory.createTitledBorder("字形(Y):"));
-	        stylebox.add(styletext);
+//	        stylebox.add(styletext);
 	        JScrollPane stylescrp = new JScrollPane(stylelist);
 	        stylescrp.setPreferredSize(new Dimension(90,100));
 	        stylescrp.setMinimumSize(new Dimension(90,100));
@@ -174,7 +174,7 @@ public class MyFont extends JDialog {
 	                setPreview();
 	            }
 	        });
-	        stylelist.addListSelectionListener(new ListSelectionListener()
+/*	        stylelist.addListSelectionListener(new ListSelectionListener()
 	        {
 	            public void valueChanged(ListSelectionEvent e)
 	            {
@@ -182,7 +182,7 @@ public class MyFont extends JDialog {
 	                //预览
 	                setPreview();
 	            }
-	        });
+	        });*/
 	        sizelist.addListSelectionListener(new ListSelectionListener()
 	        {
 	            public void valueChanged(ListSelectionEvent e)
@@ -214,13 +214,20 @@ public class MyFont extends JDialog {
 	                previewtext.setText(Number);
 	            }
 	        });
+	        
 	        //确定和取消按钮监听
 	        ensure.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {          
+	            	int startpos=mf.getJTextPane().getSelectionStart();
+	            	int endpos=mf.getJTextPane().getSelectionEnd();
+	            	if(startpos!=endpos){
+	            		mf.getJTextPane().getStyledDocument().setCharacterAttributes(startpos, endpos-startpos+1, initAttributes(), true);
+	            	}
 	                //设置字体的方法
-	                NoteFrame.getJTextArea().setFont(groupFont());
+	                mf.getJTextPane().setFont(groupFont());
+	                
 	                //退出              
 	                disposeDialog(mf);
 	            }
@@ -239,21 +246,46 @@ public class MyFont extends JDialog {
 	        Font f = groupFont();
 	        previewtext.setFont(f);
 	    }
+	    protected SimpleAttributeSet initAttributes() {
+	        //Hard-code some attributes.
+	        SimpleAttributeSet attrs = new SimpleAttributeSet();
+
+	        attrs = new SimpleAttributeSet();
+	        StyleConstants.setFontFamily(attrs, fontlist.getSelectedValue());
+	        StyleConstants.setFontSize(attrs, Integer.parseInt(sizelist.getSelectedValue()));
+
+	      /*  attrs[1] = new SimpleAttributeSet(attrs[0]);
+	        StyleConstants.setBold(attrs[1], true);
+
+	        attrs[2] = new SimpleAttributeSet(attrs[0]);
+	        StyleConstants.setItalic(attrs[2], true);
+
+	        attrs[3] = new SimpleAttributeSet(attrs[0]);
+	        StyleConstants.setFontSize(attrs[3], 20);
+
+	        attrs[4] = new SimpleAttributeSet(attrs[0]);
+	        StyleConstants.setFontSize(attrs[4], 12);
+
+	        attrs[5] = new SimpleAttributeSet(attrs[0]);*/
+//	        StyleConstants.setForeground(attrs[5], Color.red);
+
+	        return attrs;
+	    }
 	    //组合Font
-	    public Font groupFont()
+        public Font groupFont()
 	    {
 	            String fontname = fonttext.getText();
-	            String style = styletext.getText();
+//	            String style = styletext.getText();
 	            String size = sizetext.getText();
 	            int fontstyle = 0;  
-	            for(int i = 0;i < stylearray.length;i++)
-	            {
-	                if(style.equals(stylearray[i]))
-	                {
-	                    fontstyle = i;
-	                    break;
-	                }
-	            }
+//	            for(int i = 0;i < stylearray.length;i++)
+//	            {
+//	                if(style.equals(stylearray[i]))
+//	                {
+//	                    fontstyle = i;
+//	                    break;
+//	                }
+//	            }
 	            int fontsize = 0;
 	            for(int i = 0;i < sizearray.length;i++)
 	            {

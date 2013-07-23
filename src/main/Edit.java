@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
 
 import ui.NoteFrame;
 public class Edit {
@@ -16,30 +17,30 @@ public class Edit {
     public Edit(NoteFrame frame){
     	this.frame=frame;
     }
-	 public static void cancel() {
-	 if(NoteFrame.getUndoManager().canUndo())
+	 public  void cancel() {
+	 if(frame.getUndoManager().canUndo())
      {
-         NoteFrame.getUndoManager().undo();  
+         frame.getUndoManager().undo();  
      }
 	 }
-	 public static void recover(){
-	 if(NoteFrame.getUndoManager().canRedo())
+	 public  void recover(){
+	 if(frame.getUndoManager().canRedo())
      {
-         NoteFrame.getUndoManager().redo();
+         frame.getUndoManager().redo();
      }
 	 }
 	 //实现剪切方法，包括右键菜单中的剪切方法
-	    public static void Cut()
+	    public  void Cut()
 	    {
-	        String str = NoteFrame.getJTextArea().getSelectedText().replaceAll("\n", "");
+	        String str = frame.getJTextPane().getSelectedText().replaceAll("\n", "");
 	        contents = new StringSelection(str);//将string对象封装成StringSelection对象
 	        clipboard.setContents(contents, null);
-	        NoteFrame.getJTextArea().replaceSelection("");      
+	        frame.getJTextPane().replaceSelection("");      
 	    }
 	    //实现复制方法，包括右键菜单中的复制方法
 	    public void Copy()
 	    {
-	        String str = NoteFrame.getJTextArea().getSelectedText().replaceAll("\n", "");
+	        String str = frame.getJTextPane().getSelectedText().replaceAll("\n", "");
 	        contents = new StringSelection(str);
 	        clipboard.setContents(contents, null);
 	    }
@@ -51,13 +52,13 @@ public class Edit {
 	            try {
 	                //取出剪切板中的内容
 	                String content = (String)clipboard.getData(DataFlavor.stringFlavor);
-	                if(NoteFrame.getJTextArea().getSelectedText()!=null)//如果粘贴的时候选中了文字，则覆盖文字
+	                if(frame.getJTextPane().getSelectedText()!=null)//如果粘贴的时候选中了文字，则覆盖文字
 	                {
-	                    NoteFrame.getJTextArea().replaceSelection(content);
+	                    frame.getJTextPane().replaceSelection(content);
 	                }
 	                else//如果没有选中文字，则插入文字
 	                {
-	                    NoteFrame.getJTextArea().insert(content, NoteFrame.getJTextArea().getCaretPosition());
+//	                    NoteFrame.getJTextArea().insert(content, NoteFrame.getJTextArea().getCaretPosition());
 	                }
 	            } catch (Exception ex) {
 	                ex.printStackTrace();
@@ -67,12 +68,12 @@ public class Edit {
 	    //实现删除方法，包括右键菜单中的删除方法
 	    public void Delete()
 	    {
-	        NoteFrame.getJTextArea().replaceSelection("");//把选中的文字替换为空
+	        frame.getJTextPane().replaceSelection("");//把选中的文字替换为空
 	    }
 	   
 	    public void SwitchTo()
 	    {
-	        String [] text = NoteFrame.getJTextArea().getText().split("\n");
+	        String [] text = frame.getJTextPane().getText().split("\n");
 	        String str = JOptionPane.showInputDialog(frame, "行数(L):","转到下列行",
 	                JOptionPane.QUESTION_MESSAGE);      
 	        if(str!=null)//str==null是点击了取消按钮触发的事件
@@ -88,7 +89,7 @@ public class Edit {
 	                    {
 	                        pos += text[i].length() + 1;
 	                    }
-	                    NoteFrame.getJTextArea().setCaretPosition(pos);
+	                    frame.getJTextPane().setCaretPosition(pos);
 	                }
 	                else
 	                {
@@ -104,13 +105,19 @@ public class Edit {
 	    //实现全选方法，包括右键菜单中的全选方法
 	    public void SelectAll()
 	    {
-	        NoteFrame.getJTextArea().selectAll();
+	        frame.getJTextPane().selectAll();
 	    }
 	    //实现日期/时间方法
 	    public void insetDatetime()
 	    {
 	        Calendar calendar = Calendar.getInstance();
-	        int pos = NoteFrame.getJTextArea().getCaretPosition();//获取光标所在位置
-	        NoteFrame.getJTextArea().insert(calendar.getTime().toString(), pos);
+	        int pos = frame.getJTextPane().getCaretPosition();//获取光标所在位置
+//	        NoteFrame.getJTextPane().insert(calendar.getTime().toString(), pos);
+	        try {
+				frame.getMyDocument().insertString(pos, calendar.getTime().toString(), null);
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    }
 }

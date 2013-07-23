@@ -16,6 +16,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import main.HTMLString;
+
+import source.Strings;
+
 
 public class Policy extends JFrame implements ActionListener{
 	/**
@@ -24,7 +28,8 @@ public class Policy extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	static Boolean start=true;
 	private Boolean policyB=false;
-	String imgPath = new String("/source/image/login.jpg");
+	Strings strResource =new Strings();
+	String imgPath =strResource.getPOLICY_IMG();
 	
 	public Policy(){
 		init();
@@ -39,10 +44,11 @@ public class Policy extends JFrame implements ActionListener{
 		this.setLocationRelativeTo(null);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 	void init(){ 
-		JPanel panel1=new JJPanel(imgPath);
+		JPanel panel1=new JJPanel(imgPath); 
 		JTextArea textArea=new JTextArea();
 		textArea.setEditable(false);
 		ImageIcon img=new ImageIcon(Policy.class.getResource("/source/image/lazy.jpg"));
@@ -58,7 +64,7 @@ public class Policy extends JFrame implements ActionListener{
 		box.add(Box.createVerticalStrut(30));
 		box.add(textArea);
 		box.add(Box.createVerticalStrut(30));
-		JCheckBox check=new JCheckBox("我自愿同意以上协议,自愿承担相应法律责任");
+		JCheckBox check=new JCheckBox(new HTMLString().getLabelString("我自愿同意以上协议", "red"));
 //		check.setOpaque(false);
 		check.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
