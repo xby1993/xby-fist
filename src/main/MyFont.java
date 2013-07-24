@@ -220,13 +220,13 @@ public class MyFont extends JDialog {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {          
-	            	int startpos=mf.getJTextPane().getSelectionStart();
-	            	int endpos=mf.getJTextPane().getSelectionEnd();
+	            	int startpos=mf.getJJTextPane().getSelectionStart();
+	            	int endpos=mf.getJJTextPane().getSelectionEnd();
 	            	if(startpos!=endpos){
-	            		mf.getJTextPane().getStyledDocument().setCharacterAttributes(startpos, endpos-startpos+1, initAttributes(), true);
+	            		mf.getJJTextPane().getStyledDocument().setCharacterAttributes(startpos, endpos-startpos+1, initAttributes(), true);
 	            	}
 	                //设置字体的方法
-	                mf.getJTextPane().setFont(groupFont());
+	                mf.getJJTextPane().setFont(groupFont());
 	                
 	                //退出              
 	                disposeDialog(mf);

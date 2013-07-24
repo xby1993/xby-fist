@@ -52,7 +52,7 @@ public class Login extends JFrame implements ActionListener {
 	private Strings strResource = new Strings();
 	private boolean success=false;
 	private static String usrname;
-
+	private String WELCOME="欢迎你使用小白杨日记本";
 	public Login() {
 		initMenuBar();
 		initBox();
@@ -82,7 +82,8 @@ public class Login extends JFrame implements ActionListener {
 	 * @return void
 	 */
 	private void initBox() {
-		label0 = new JLabel("含羞草童鞋,欢迎你使用小白杨日记本含羞草专版");
+		label0 = new JLabel(WELCOME);
+		label0.setAlignmentX(CENTER_ALIGNMENT);
 		label0.setOpaque(false);
 		label1 = new JLabel(new HTMLString().getLabelString(strResource.getNAME(),"yellow"));
 		label2 = new JLabel(new HTMLString().getLabelString(strResource.getPASS(),"yellow"));
@@ -125,8 +126,8 @@ public class Login extends JFrame implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == menuItem) {
-			JOptionPane.showMessageDialog(this, "小白杨第一个工程-含羞草专版日记本" + "\n"
-					+ "献给我最爱的人", "关于", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "谢谢您的支持" + "\n"
+					, "关于", JOptionPane.INFORMATION_MESSAGE);
 			return;
 
 		} else if (e.getSource() == register) {
@@ -166,7 +167,7 @@ public class Login extends JFrame implements ActionListener {
 					EventQueue.invokeLater(new Runnable(){
 						public void run(){
 							NoteFrame note = new NoteFrame();
-							note.setTitle("含羞草专属日记本");
+							note.setTitle("日记本");
 							
 						}
 					});

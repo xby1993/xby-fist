@@ -65,7 +65,8 @@ public class Register extends JFrame implements ActionListener{
 		menuItem.addActionListener(this);
 	}
 	void initBox(){
-		label0 = new JLabel("含羞草童鞋"+"\n"+"欢迎你使用小白杨日记本含羞草专版");
+		label0 = new JLabel("欢迎使用");
+		label0.setAlignmentX(CENTER_ALIGNMENT);
 		label1 = new JLabel(strResource.getNAME());
 		label2 = new JLabel(strResource.getPASS());
 		label3=new JLabel("再输一遍");
@@ -106,12 +107,12 @@ public class Register extends JFrame implements ActionListener{
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == menuItem) {
-			JOptionPane.showMessageDialog(this, "小白杨第一个工程-含羞草专版日记本" + "\n"
-					+ "献给我最爱的人", "关于", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "小白杨" + "\n"
+					, "关于", JOptionPane.INFORMATION_MESSAGE);
 
 		} else if (e.getSource() == cancel) {
 			dispose();
-			new Login().setTitle("含羞草专属记事本");
+			new Login().setTitle("小白杨日记本,欢迎登陆");
 		}else {
 //			File file =new File("src/source/xby.cfg");
 			String path=strResource.getPasswdPath();

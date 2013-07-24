@@ -24,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -33,15 +32,16 @@ import main.Edit;
 import main.FileOperator;
 import main.Help;
 import main.MyFont;
+import ui.JJTextPane;
 import ui.NoteFrame;
 
 public class NoteFrameEvent {
 	private int findnextcount = 0;
-	private JTextPane textPane;
+	private JJTextPane textPane;
 	private NoteFrame frame;
 	public NoteFrameEvent(NoteFrame frame){
 		this.frame=frame;
-		textPane=frame.getJTextPane();
+		textPane=frame.getJJTextPane();
 //		textPane=frame.textPane;
 	}
 	void replace() {// 替换对话框，添加监听器并重写actionPerformed方法

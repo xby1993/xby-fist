@@ -13,7 +13,7 @@ import ui.NoteFrame;
 public class Edit {
 	private static Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     private static StringSelection contents;
-   NoteFrame frame;
+  private  NoteFrame frame;
     public Edit(NoteFrame frame){
     	this.frame=frame;
     }
@@ -32,15 +32,15 @@ public class Edit {
 	 //实现剪切方法，包括右键菜单中的剪切方法
 	    public  void Cut()
 	    {
-	        String str = frame.getJTextPane().getSelectedText().replaceAll("\n", "");
+	        String str = frame.getJJTextPane().getSelectedText().replaceAll("\n", "");
 	        contents = new StringSelection(str);//将string对象封装成StringSelection对象
 	        clipboard.setContents(contents, null);
-	        frame.getJTextPane().replaceSelection("");      
+	        frame.getJJTextPane().replaceSelection("");      
 	    }
 	    //实现复制方法，包括右键菜单中的复制方法
 	    public void Copy()
 	    {
-	        String str = frame.getJTextPane().getSelectedText().replaceAll("\n", "");
+	        String str = frame.getJJTextPane().getSelectedText().replaceAll("\n", "");
 	        contents = new StringSelection(str);
 	        clipboard.setContents(contents, null);
 	    }
@@ -52,13 +52,14 @@ public class Edit {
 	            try {
 	                //取出剪切板中的内容
 	                String content = (String)clipboard.getData(DataFlavor.stringFlavor);
-	                if(frame.getJTextPane().getSelectedText()!=null)//如果粘贴的时候选中了文字，则覆盖文字
+	                if(frame.getJJTextPane().getSelectedText()!=null)//如果粘贴的时候选中了文字，则覆盖文字
 	                {
-	                    frame.getJTextPane().replaceSelection(content);
+	                    frame.getJJTextPane().replaceSelection(content);
 	                }
 	                else//如果没有选中文字，则插入文字
 	                {
-//	                    NoteFrame.getJTextArea().insert(content, NoteFrame.getJTextArea().getCaretPosition());
+	                    frame.getJJTextPane().getDocument().insertString(frame.getJJTextPane().getCaretPosition(),content,null);
+	                    
 	                }
 	            } catch (Exception ex) {
 	                ex.printStackTrace();
@@ -68,12 +69,12 @@ public class Edit {
 	    //实现删除方法，包括右键菜单中的删除方法
 	    public void Delete()
 	    {
-	        frame.getJTextPane().replaceSelection("");//把选中的文字替换为空
+	        frame.getJJTextPane().replaceSelection("");//把选中的文字替换为空
 	    }
 	   
 	    public void SwitchTo()
 	    {
-	        String [] text = frame.getJTextPane().getText().split("\n");
+	        String [] text = frame.getJJTextPane().getText().split("\n");
 	        String str = JOptionPane.showInputDialog(frame, "行数(L):","转到下列行",
 	                JOptionPane.QUESTION_MESSAGE);      
 	        if(str!=null)//str==null是点击了取消按钮触发的事件
@@ -89,7 +90,7 @@ public class Edit {
 	                    {
 	                        pos += text[i].length() + 1;
 	                    }
-	                    frame.getJTextPane().setCaretPosition(pos);
+	                    frame.getJJTextPane().setCaretPosition(pos);
 	                }
 	                else
 	                {
@@ -105,14 +106,14 @@ public class Edit {
 	    //实现全选方法，包括右键菜单中的全选方法
 	    public void SelectAll()
 	    {
-	        frame.getJTextPane().selectAll();
+	        frame.getJJTextPane().selectAll();
 	    }
 	    //实现日期/时间方法
 	    public void insetDatetime()
 	    {
 	        Calendar calendar = Calendar.getInstance();
-	        int pos = frame.getJTextPane().getCaretPosition();//获取光标所在位置
-//	        NoteFrame.getJTextPane().insert(calendar.getTime().toString(), pos);
+	        int pos = frame.getJJTextPane().getCaretPosition();//获取光标所在位置
+//	        NoteFrame.getJJTextPane().insert(calendar.getTime().toString(), pos);
 	        try {
 				frame.getMyDocument().insertString(pos, calendar.getTime().toString(), null);
 			} catch (BadLocationException e) {

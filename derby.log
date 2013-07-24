@@ -1,0 +1,10 @@
+----------------------------------------------------------------
+Fri Jul 05 10:48:34 CST 2013:
+ 正在使用类加载器 sun.misc.Launcher$AppClassLoader@4ab03512 引导数据库
+目录 /home/xby64/document/java/workspace/xby-fist/test  中的 Derby 版本 The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258) 实例 a816c00e-013f-acbb-26e4-000004c5f450
+
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_21-b11
+user.dir=/home/xby64/document/java/workspace/xby-fist
+derby.system.home=null
+数据库类装入器已启动 － derby.database.classpath=“”

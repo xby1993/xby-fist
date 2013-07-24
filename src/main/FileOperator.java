@@ -19,6 +19,10 @@ import javax.swing.text.html.HTMLDocument;
 
 import ui.Login;
 import ui.NoteFrame;
+import util.Command;
+import util.MyCommand;
+import util.Reciver;
+import util.Work;
 
 public class FileOperator {
 	private NoteFrame frame;
@@ -29,12 +33,13 @@ public class FileOperator {
 			+ Login.getUser();
 	private File savefile;
 	private File openfile;
+	private File readfile;
 //	private File savefile;
 
 	public FileOperator(NoteFrame frame) {
 		this.frame = frame;
 //		doc = (HTMLDocument) frame.getMyDocument();
-//		editorKit = (HTMLEditorKit) frame.getJTextPane().getEditorKit();
+//		editorKit = (HTMLEditorKit) frame.getJJTextPane().getEditorKit();
 		File path = new File(defaultPath);
 		if (!path.exists()) {
 			path.mkdir();
@@ -49,22 +54,26 @@ public class FileOperator {
 		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
 		chooser.setFileFilter(filter);
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			// 此时文件肯定是.txt格式或者.TXT格式的，因此不需要再判断后缀名了,只需要判断是否选择了文档文件
-			File file = chooser.getSelectedFile();
+			readfile = chooser.getSelectedFile();
 //			frame.setTempFile(file);// 保存当前打开的文件的路径
-			if (file.exists()) {
-				frame.setTitle(file.getName());
+			if (readfile.exists()) {
+				frame.setTitle(readfile.getName());
 				frame.tabAdd();
 //				BufferedReader bufin = new BufferedReader(new FileReader(file));
 //				try {
-//					frame.getJTextPane().getEditorKit()
+//					frame.getJJTextPane().getEditorKit()
 //							.read(bufin, frame.getMyDocument(), 0);
 //					bufin.close();
 //				} catch (IOException | BadLocationException e) {
 					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
-				open(file);
+				Command com=new MyCommand(new Reciver(){
+					public void action(){
+						open(readfile);
+					}
+				});
+				new Work(com).execute();
 			}
 
 		}
@@ -73,8 +82,7 @@ public class FileOperator {
 	}
 	void open(File file){
 		openfile = file;
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
+		
 				try {
 					FileInputStream in = new FileInputStream(openfile);
 					ObjectInputStream input = new ObjectInputStream(in);
@@ -88,7 +96,7 @@ public class FileOperator {
 					}
 				});// 添加可撤销、恢复编辑监听
 					frame.getDocList().set(frame.getSelectTabIndex(),doc);
-					frame.getJTextPane().setDocument(frame.getMyDocument());
+					frame.getJJTextPane().setDocument(frame.getMyDocument());
 //					frame.htmldoc=doc;
 //					frame.textPane.setDocument(frame.htmldoc);
 					input.close();
@@ -104,8 +112,6 @@ public class FileOperator {
 					e2.printStackTrace();
 
 				} 
-			}
-		});
 	}
 	// 实现把当前文本框的文字写入到目标路径下的方法
 	public Boolean writeBack(File file) {
@@ -116,12 +122,12 @@ public class FileOperator {
 		// bufout.close();
 	
 		try {
-				frame.getJTextPane().getDocument().insertString(0, frame.getDate() + "\n", null);
+				frame.getJJTextPane().getDocument().insertString(0, frame.getDate() + "\n", null);
 			
 			FileOutputStream out = new FileOutputStream(tfile);
 			ObjectOutputStream output = new ObjectOutputStream(out);
 //			output.writeObject(frame.htmldoc);
-			output.writeObject(frame.getJTextPane().getDocument());
+			output.writeObject(frame.getJJTextPane().getDocument());
 			output.flush();
 			output.close();
 			out.close();
@@ -139,7 +145,7 @@ public class FileOperator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		frame.getJTextPane().setText("");
+		frame.getJJTextPane().setText("");
 		// writer.close();
 
 		frame.setChanged(false);// 回写一次之后，此时当前文本没有被修改
@@ -164,14 +170,14 @@ public class FileOperator {
 //			if (result == JOptionPane.YES_OPTION) {
 //				// 调用保存方法
 //				saveFile();
-//				frame.getJTextPane().setText("");
+//				frame.getJJTextPane().setText("");
 //				frame.setChanged(false);
 //			} else if (result == JOptionPane.NO_OPTION) {
-//				frame.getJTextPane().setText("");
+//				frame.getJJTextPane().setText("");
 //				frame.setChanged(false);
 //			}
 //		} else {
-//			frame.getJTextPane().setText("");
+//			frame.getJJTextPane().setText("");
 //			frame.setChanged(false);
 //		}
 		frame.tabAdd();
@@ -186,13 +192,13 @@ public class FileOperator {
 		 * JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE); if
 		 * (result == JOptionPane.YES_OPTION) { //
 		 * 如果选择保存，则先保存当前文件，再把要打开的文件的文字读入到当前文本框中 saveFile();
-		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * frame.getJJTextPane().setText(""); try { readTo(); } catch
 		 * (FileNotFoundException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } } else if (result == JOptionPane.NO_OPTION) {
-		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * frame.getJJTextPane().setText(""); try { readTo(); } catch
 		 * (FileNotFoundException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } } } else { // 如果当前文件没有修改，则直接打开目标文件
-		 * frame.getJTextPane().setText(""); try { readTo(); } catch
+		 * frame.getJJTextPane().setText(""); try { readTo(); } catch
 		 * (FileNotFoundException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); } }
 		 */
@@ -201,12 +207,18 @@ public class FileOperator {
 	// 实现保存文件
 	public void save(File file) {
 		savefile = file;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
+		Command com=new MyCommand(new Reciver(){
+			public void action(){
 				writeBack(savefile);
-
 			}
 		});
+		new Work(com).execute();
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				writeBack(savefile);
+//
+//			}
+//		});
 	}
 
 	public void saveFile() {
@@ -249,7 +261,7 @@ public class FileOperator {
 //		}
 
 //		int length = doc.getLength();
-//		frame.getJTextPane().setCaretPosition(length);
+//		frame.getJJTextPane().setCaretPosition(length);
 	}
 
 //	// 实现文件另存为
@@ -275,7 +287,7 @@ public class FileOperator {
 //						// 先删除该目录下的原文件，再新建一个同名的文件，最后写入内容
 //						// writeBack(file);
 //						save(file);
-//						// frame.getJTextPane().setText("");// 清空数据
+//						// frame.getJJTextPane().setText("");// 清空数据
 //					}
 //				} else {
 //					// writeBack(file);

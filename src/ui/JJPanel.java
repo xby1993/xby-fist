@@ -45,6 +45,7 @@ public class JJPanel extends JPanel {
 		TexturePaint tu = new TexturePaint(bufImg, rectan);
 		// 用创建的纹理填充来填充整个面板
 		g2d = (Graphics2D) g;
+		new ObjectRec(g2d).setObjectRec();
 		g2d.setPaint(tu);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 		super.paint(g);

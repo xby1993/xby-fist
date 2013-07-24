@@ -54,17 +54,17 @@ public class Policy extends JFrame implements ActionListener{
 		ImageIcon img=new ImageIcon(Policy.class.getResource("/source/image/lazy.jpg"));
 		JLabel label1=new JLabel(img);
 	
-		String str="1.你是一个小胖子!\n"+"2.你是一个傻瓜\n"+"3.你是杨宝宝\n"+"4.你爱小白杨\n"+"5.你会一直报告此软件BUG\n"+
-				"6.这属于商业机密,你保证不会泄密\n"+"7.如若违反上述协议,自愿承担相应法律责任";
+		String str="0.特别提醒,为了充分了解软件的功能及使用\n登陆后查看帮助说明\n"+"否则您将无法充分使用该软件\n"
+				+"1.你会一直报告此软件BUG\n"+"2.本软件遵守GPL许可协议\n";
 		textArea.append(str);
 		textArea.setOpaque(false);
-		textArea.setFont(new Font("不知道",Font.ITALIC,20));
+		textArea.setFont(new Font("微软雅黑",Font.ITALIC,20));
 		Box box=Box.createVerticalBox();
 		box.add(label1); 
 		box.add(Box.createVerticalStrut(30));
 		box.add(textArea);
 		box.add(Box.createVerticalStrut(30));
-		JCheckBox check=new JCheckBox(new HTMLString().getLabelString("我自愿同意以上协议", "red"));
+		JCheckBox check=new JCheckBox(new HTMLString().getLabelString("我自愿同意以上协议", "blue"));
 //		check.setOpaque(false);
 		check.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
@@ -95,10 +95,10 @@ public class Policy extends JFrame implements ActionListener{
 		case "确定":
 			if(policyB){
 				if(start){
-					new Login().setTitle("小白楊日記本-含羞草專版");;
+					new Login().setTitle("小白楊日記本");;
 					this.dispose();
 				}else{
-				new Register().setTitle("小白杨日记本-含羞草专版");
+				new Register().setTitle("小白杨日记本");
 				this.dispose();
 				}
 			}else{

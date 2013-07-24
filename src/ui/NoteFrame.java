@@ -11,7 +11,6 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.SystemTray;
 import java.awt.TexturePaint;
 import java.awt.Toolkit;
@@ -42,17 +41,13 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
@@ -64,7 +59,7 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.undo.UndoManager;
-
+import ui.JJMenuItem;
 import main.FileOperator;
 import main.JMusic;
 import main.event.NoteFrameEvent;
@@ -90,7 +85,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private int tabs;
 	private JButton buttonPic;
 	// 菜单条
-	private JMenuBar menuBar;
+	private JJMenuBar menuBar;
 	private String[] jmenuStr = { "文件", "编辑", "搜索", "格式", "帮助" };
 	private String[][] jitemStr = {
 			{ "新建", "打开", "保存", "另存为", "", "页面设置", "打印", "", "退出" },
@@ -106,8 +101,8 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private String[] jpopItemStr = { "撤销", "恢复", "剪切", "复制", "粘贴", "删除", "全选" };
 
 	// 编辑文字区
-	public JTextPane textPane;
-	private ArrayList<JTextPane> textList = new ArrayList<JTextPane>();
+	public JJTextPane textPane;
+	private ArrayList<JJTextPane> textList = new ArrayList<JJTextPane>();
 	public HTMLDocument htmldoc;
 	private ArrayList<HTMLDocument> docList = new ArrayList<HTMLDocument>();
 	// private HTMLEditorKit editKit;
@@ -138,7 +133,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	// 设置正在播放的歌曲
 	private JLabel labelMusic;
 	private UndoManager undoManager = new UndoManager();// 新建可撤销、恢复列表类
-	private JMenuItem[][] jitem;
+	private JJMenuItem[][] jitem;
 	
 	// 撤销和恢复
 
@@ -189,7 +184,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 //		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 //		repaint();
 		SetLookAndFeel.setLookAndFeel(this);
-		
+
 		setVisible(true);
 
 	}
@@ -278,9 +273,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// 初始化文件菜单
 		Logger.getLogger("com.xby.log").info(0 + "-->" + imgPathStr.get(0));
 		Logger.getLogger("com.xby.log").info(1 + "imgPath-->" + imgPath);
-		menuBar = new JMenuBar();
+		menuBar = new JJMenuBar();
 		JMenu[] jmenu = new JMenu[jmenuStr.length];
-		jitem = new JMenuItem[jitemStr.length][];
+		jitem = new JJMenuItem[jitemStr.length][];
 		jmenu[3] = new JMenu("格式");
 		initFormat(jmenu[3]);// 初始化格式菜单
 		menuBar.add(jmenu[3]);
@@ -289,12 +284,12 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				continue;
 			jmenu[i] = new JMenu(jmenuStr[i]);
 			jmenu[i].setCursor(cursor);
-			jitem[i] = new JMenuItem[jitemStr[i].length];
+			jitem[i] = new JJMenuItem[jitemStr[i].length];
 			for (int j = 0; j < jitem[i].length; j++) {
 				if ("".equals(jitemStr[i][j])) {
 					jmenu[i].addSeparator();
 				} else {
-					jitem[i][j] = new JMenuItem(jitemStr[i][j]);
+					jitem[i][j] = new JJMenuItem(jitemStr[i][j]);
 					jitem[i][j].setCursor(cursor);
 					jitem[i][j].addActionListener(this);
 					jmenu[i].add(jitem[i][j]);
@@ -324,6 +319,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		JSplitPane pane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel2,
 				panel1);
 		pane1.setResizeWeight(0.3);
+
 		pane1.setVisible(true);
 		add(pane1);
 
@@ -331,9 +327,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
 	void initPopMenu() {
 		pmenu = new JPopupMenu();
-		JMenuItem[] jpopItem = new JMenuItem[jpopItemStr.length];
+		JJMenuItem[] jpopItem = new JJMenuItem[jpopItemStr.length];
 		for (int i = 0; i < jpopItem.length; i++) {
-			jpopItem[i] = new JMenuItem(jpopItemStr[i]);
+			jpopItem[i] = new JJMenuItem(jpopItemStr[i]);
 			jpopItem[i].addActionListener(this);
 			pmenu.add(jpopItem[i]);
 
@@ -398,16 +394,16 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	}
 
 	// void initTextPane(){
-	// textPane=new JTextPane();
+	// textPane=new JJTextPane();
 	// htmldoc=new HTMLDocument();
 	// textPane.setFont(new Font("黑体", 20, 20));
 	// textPane.setEnabled(true);
 	// textPane.setVisible(true);
 	// editKit = new HTMLEditorKit();
-	// // 实例化一个HTMLEditorkit工具包，用来编辑和解析用来显示在jtextpane中的内容。
+	// // 实例化一个HTMLEditorkit工具包，用来编辑和解析用来显示在JJTextPane中的内容。
 	// // doci = (HTMLDocument) editKit.createDefaultDocument();
 	// // 使用HTMLEditorKit类的方法来创建一个文档类，HTMLEditorKit创建的类型默认为htmldocument。
-	// // 设置jtextpane组件的编辑器工具包，是其支持html格式。
+	// // 设置JJTextPane组件的编辑器工具包，是其支持html格式。
 	// // textPanei.setContentType("text/html");
 	// // 设置编辑器要处理的文档内容类型，有text/html,text/rtf.text/plain三种类型。
 	// textPane.setEditorKit(editKit);
@@ -433,7 +429,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 			tabs = 0;
 		int i = tabs;
 
-		JTextPane textPanei = new JTextPane();
+		JJTextPane textPanei = new JJTextPane();
 		HTMLDocument doci = new HTMLDocument();
 //		textPanei.setFont(new Font("黑体", 20, 20));
 		textPanei.setFont(new Font("方正黑体_GBK",Font.PLAIN,14));
@@ -442,10 +438,10 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		textPanei.setEnabled(true);
 		textPanei.setVisible(true);
 		HTMLEditorKit editKit = new HTMLEditorKit();
-		// 实例化一个HTMLEditorkit工具包，用来编辑和解析用来显示在jtextpane中的内容。
+		// 实例化一个HTMLEditorkit工具包，用来编辑和解析用来显示在JJTextPane中的内容。
 		// doci = (HTMLDocument) editKit.createDefaultDocument();
 		// 使用HTMLEditorKit类的方法来创建一个文档类，HTMLEditorKit创建的类型默认为htmldocument。
-		// 设置jtextpane组件的编辑器工具包，是其支持html格式。
+		// 设置JJTextPane组件的编辑器工具包，是其支持html格式。
 		// textPanei.setContentType("text/html");
 		// 设置编辑器要处理的文档内容类型，有text/html,text/rtf.text/plain三种类型。
 		textPanei.setEditorKit(editKit);
@@ -605,7 +601,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		return undoManager;
 	}
 
-	public JTextPane getJTextPane() {
+	public JJTextPane getJJTextPane() {
 		return getTextList().get(tabPane.getSelectedIndex());
 	}
 
@@ -713,7 +709,14 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 					img.getHeight(null));
 			TexturePaint tu = new TexturePaint(bufImg, rectan);
 			// 用创建的纹理填充来填充整个面板
+			
 			g2d = (Graphics2D) g;
+			//用于抗锯齿
+/*			RenderingHints render=new RenderingHints(null);
+			render.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			render.put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2d.setRenderingHints(render);*/
+			new ObjectRec(g2d).setObjectRec();
 			g2d.setPaint(tu);
 			g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 			super.paint(g);
@@ -744,7 +747,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	/**
 	 * @return the textList
 	 */
-	public ArrayList<JTextPane> getTextList() {
+	public ArrayList<JJTextPane> getTextList() {
 		return textList;
 	}
 
@@ -752,7 +755,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	 * @param textList
 	 *            the textList to set
 	 */
-	public void setTextList(ArrayList<JTextPane> textList) {
+	public void setTextList(ArrayList<JJTextPane> textList) {
 		this.textList = textList;
 	}
 
