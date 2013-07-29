@@ -28,10 +28,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import main.Edit;
-import main.FileOperator;
-import main.Help;
-import main.MyFont;
+import main.operation.Edit;
+import main.operation.FileOperator;
+import main.operation.Help;
+import main.operation.MyFont;
+import main.thread.ThreadBean;
 import ui.JJTextPane;
 import ui.NoteFrame;
 
@@ -274,6 +275,12 @@ public void actionEvent(ActionEvent event){
 		break;
 	case "退出":
 		new FileOperator(frame).exit();
+		break;
+	case "上一首":
+		ThreadBean.setBackSong(true);
+		break;
+	case "下一首":
+		ThreadBean.setFowardSong(true);
 		break;
 	default:
 		break;

@@ -1,4 +1,4 @@
-package main;
+package main.operation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -57,7 +56,8 @@ public class FileOperator {
 			readfile = chooser.getSelectedFile();
 //			frame.setTempFile(file);// 保存当前打开的文件的路径
 			if (readfile.exists()) {
-				frame.setTitle(readfile.getName());
+//				frame.setTitle(readfile.getName());
+				frame.setTabTitle(readfile.getName());
 				frame.tabAdd();
 //				BufferedReader bufin = new BufferedReader(new FileReader(file));
 //				try {

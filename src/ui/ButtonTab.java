@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import main.FileOperator;
+import main.operation.FileOperator;
 
 public class ButtonTab extends JPanel {
 	/**

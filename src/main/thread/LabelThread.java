@@ -5,8 +5,8 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-import main.JMusic;
-import ui.MusicList;
+import main.music.JMusic;
+import main.music.MusicList;
 
 public class LabelThread implements Runnable{
 	private JLabel label;

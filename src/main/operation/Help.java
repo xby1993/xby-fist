@@ -1,9 +1,7 @@
-package main;
+package main.operation;
 
-import javax.swing.JOptionPane;
 
 import ui.JJDialog;
-import ui.JJOptionPane;
 /**
  *@description 实现帮助菜单下的所有方法
  * @author 小白杨

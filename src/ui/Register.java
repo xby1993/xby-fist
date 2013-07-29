@@ -14,7 +14,6 @@ import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -22,9 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-
-import main.FileOperator;
 
 import source.Strings;
 
@@ -33,14 +29,14 @@ public class Register extends JFrame implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	JLabel label0,label1,label2,label3;
-	JTextField usrField;
-	JPasswordField passwdField,repeatField;
-	JButton confirm, cancel;
-	Box baseBox, boxV1, boxV2;
-	JPanel panel;
-	Strings strResource = new Strings();
-	String imgPath=strResource.getREGISTER_IMG();
+	private JJLabel label0,label1,label2,label3;
+	private JTextField usrField;
+	private JPasswordField passwdField,repeatField;
+	private JButton confirm, cancel;
+	private Box baseBox, boxV1, boxV2;
+	private JPanel panel;
+	private Strings strResource = new Strings();
+	private String imgPath=strResource.getREGISTER_IMG();
 	private AbstractButton menuItem;
 	private JMenuBar menuBar;
 	private JMenu menu;
@@ -65,11 +61,11 @@ public class Register extends JFrame implements ActionListener{
 		menuItem.addActionListener(this);
 	}
 	void initBox(){
-		label0 = new JLabel("欢迎使用");
+		label0 = new JJLabel("欢迎使用");
 		label0.setAlignmentX(CENTER_ALIGNMENT);
-		label1 = new JLabel(strResource.getNAME());
-		label2 = new JLabel(strResource.getPASS());
-		label3=new JLabel("再输一遍");
+		label1 = new JJLabel(strResource.getNAME());
+		label2 = new JJLabel(strResource.getPASS());
+		label3=new JJLabel("再输一遍");
 		usrField=new JTextField(20);
 		passwdField=new JPasswordField(20);
 		repeatField=new JPasswordField(20);

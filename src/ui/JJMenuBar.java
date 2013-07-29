@@ -6,6 +6,11 @@ import java.awt.Graphics2D;
 import javax.swing.JMenuBar;
 
 public class JJMenuBar extends JMenuBar {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d=(Graphics2D)g;

@@ -16,8 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import main.HTMLString;
-
+import main.operation.HTMLString;
 import source.Strings;
 
 

@@ -15,10 +15,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -27,8 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import main.HTMLString;
-
+import main.operation.HTMLString;
 import source.Strings;
 
 /**
@@ -43,7 +42,7 @@ public class Login extends JFrame implements ActionListener {
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem;
-	private JLabel label0, label1, label2;
+	private JJLabel  label1, label2;
 	private JTextField usrField;
 	private JPasswordField passwdField;
 	private JButton logIn, register;
@@ -52,7 +51,6 @@ public class Login extends JFrame implements ActionListener {
 	private Strings strResource = new Strings();
 	private boolean success=false;
 	private static String usrname;
-	private String WELCOME="欢迎你使用小白杨日记本";
 	public Login() {
 		initMenuBar();
 		initBox();
@@ -82,11 +80,9 @@ public class Login extends JFrame implements ActionListener {
 	 * @return void
 	 */
 	private void initBox() {
-		label0 = new JLabel(WELCOME);
-		label0.setAlignmentX(CENTER_ALIGNMENT);
-		label0.setOpaque(false);
-		label1 = new JLabel(new HTMLString().getLabelString(strResource.getNAME(),"yellow"));
-		label2 = new JLabel(new HTMLString().getLabelString(strResource.getPASS(),"yellow"));
+		
+		label1 = new JJLabel(new HTMLString().getLabelString(strResource.getNAME(),"yellow"));
+		label2 = new JJLabel(new HTMLString().getLabelString(strResource.getPASS(),"yellow"));
 		usrField = new JTextField(20);
 		passwdField = new JPasswordField(20);
 		logIn = new JButton(strResource.getLOGIN());
@@ -111,7 +107,6 @@ public class Login extends JFrame implements ActionListener {
 		boxV2.add(passwdField);
 		boxV2.add(Box.createVerticalStrut(35));
 		boxV2.add(register);
-		add(label0, BorderLayout.NORTH);
 		baseBox.add(boxV1);
 		baseBox.add(Box.createHorizontalStrut(20));
 		baseBox.add(boxV2);

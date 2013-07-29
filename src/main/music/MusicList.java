@@ -1,4 +1,4 @@
-package ui;
+package main.music;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -13,7 +13,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import main.JMusic;
+import main.music.JMusic;
 import source.Strings;
 
 public class MusicList {
@@ -45,6 +45,7 @@ public class MusicList {
 		musicList.setFixedCellWidth(200);
 		musicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		musicList.setListData(getListStr());
+		musicList.setVisibleRowCount(12);
 		scroll.setViewportView(musicList);
 		/*
 		 * musicList.addListSelectionListener(new ListSelectionListener() {
