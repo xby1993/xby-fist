@@ -128,8 +128,8 @@ public class JMusic {
 		private Random random = new Random();
 		private long tempLen = 0L;
 		private long time;
-		private MusicSettings labelAnim1=new MusicSettings(1000, 5, 5);
-		private MusicSettings labelAnim2=new MusicSettings(1000, 15, 8);
+		private MusicSettings labelAnim1=new MusicSettings(800, 5, 5);
+		private MusicSettings labelAnim2=new MusicSettings(800, 15, 8);
 		
 		public PlayThread(JMusic music) {
 			this.music = music;

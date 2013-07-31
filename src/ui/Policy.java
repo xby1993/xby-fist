@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -31,6 +32,8 @@ public class Policy extends JFrame implements ActionListener{
 	String imgPath =strResource.getPOLICY_IMG();
 	
 	public Policy(){
+//		setUndecorated(true);
+//		setShape(new Ellipse2D.Double(getLocation().x,getLocation().y,getWidth(),getHeight()));
 		init();
 /*		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = this.getWidth();
@@ -38,10 +41,9 @@ public class Policy extends JFrame implements ActionListener{
 //		setBounds(size.width/2 - width / 2, size.height/2 -height/ 2, width,
 //				height);
 		setLocation(size.width/2 - width / 2, size.height/2 - height/ 2);
- */
+ */		
 		pack();
 		this.setLocationRelativeTo(null);
-
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
@@ -52,7 +54,7 @@ public class Policy extends JFrame implements ActionListener{
 		textArea.setEditable(false);
 		ImageIcon img=new ImageIcon(Policy.class.getResource("/source/image/lazy.jpg"));
 		JLabel label1=new JLabel(img);
-	
+		label1.setOpaque(false);
 		String str="0.特别提醒,为了充分了解软件的功能及使用\n登陆后查看帮助说明\n"+"否则您将无法充分使用该软件\n"
 				+"1.你会一直报告此软件BUG\n"+"2.本软件遵守GPL许可协议\n";
 		textArea.append(str);

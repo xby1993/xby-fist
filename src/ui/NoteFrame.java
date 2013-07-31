@@ -819,14 +819,20 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 			 * AlphaComposite.SRC_OVER, 0.5F));
 			 */
 			g2d.drawImage(img, 0, 0, null);
-
 			// g2d.dispose();// 释放资源
+			g2d.rotate(Math.toRadians(-30));// 旋转绘图上下文对象
+			Font font = new Font("楷体", Font.BOLD, 72);// 创建字体对象
+			g2d.setFont(font);// 指定字体
+			g2d.setColor(Color.GREEN);// 指定颜色
+			AlphaComposite alpha = AlphaComposite.SrcOver.derive(0.4f);// 获得表示透明度的AlphaComposite对象
+			g2d.setComposite(alpha);// 指定AlphaComposite对象
+			g2d.drawString("小白杨", -30, 240);// 绘制文本,实现水印
 			// 准备矩形，用来创建一个纹理填充
 			Rectangle rectan = new Rectangle(0, 0, img.getWidth(null),
 					img.getHeight(null));
 			TexturePaint tu = new TexturePaint(bufImg, rectan);
 			// 用创建的纹理填充来填充整个面板
-
+	
 			g2d = (Graphics2D) g;
 			// 用于抗锯齿
 			/*
