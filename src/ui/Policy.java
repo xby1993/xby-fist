@@ -55,8 +55,10 @@ public class Policy extends JFrame implements ActionListener{
 		ImageIcon img=new ImageIcon(Policy.class.getResource("/source/image/lazy.jpg"));
 		JLabel label1=new JLabel(img);
 		label1.setOpaque(false);
-		String str="0.特别提醒,为了充分了解软件的功能及使用\n登陆后查看帮助说明\n"+"否则您将无法充分使用该软件\n"
-				+"1.你会一直报告此软件BUG\n"+"2.本软件遵守GPL许可协议\n";
+		String str="0.特别提醒,为了充分了解软件的功能及使用\n" +
+				"1.登陆后查看帮助说明\n"+"" +
+						"2.否则您将无法充分使用该软件\n"
+				+"3.你会一直报告此软件BUG\n"+"4.本软件遵守GPL许可协议\n";
 		textArea.append(str);
 		textArea.setOpaque(false);
 		textArea.setFont(new Font("微软雅黑",Font.ITALIC,20));
