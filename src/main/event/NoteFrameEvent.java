@@ -172,6 +172,8 @@ public class NoteFrameEvent {
 					textPane.setSelectedTextColor(Color.RED);
 					index=index+sfind.length();
 //					count++;
+				}else{
+					unfind();
 				}
 //				String main="";
 //				try {
