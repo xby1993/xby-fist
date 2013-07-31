@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 
 import main.operation.HTMLString;
 import source.Strings;
+import util.SHAPasswd;
 
 /**
  * @author xby64
@@ -152,6 +153,7 @@ public class Login extends JFrame implements ActionListener {
 				}
 				for(String usr:props.stringPropertyNames()){
 					if(usr.equals(usrname)){
+						passwd=SHAPasswd.encry(passwd);
 						success=props.getProperty(usr).equals(passwd);
 						if(success){
 							break;

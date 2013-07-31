@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -34,7 +35,8 @@ public class FileOperator {
 	private File openfile;
 	private File readfile;
 //	private File savefile;
-
+	private  String[] ext={"xby 文件", "XBY", "xby"};
+	
 	public FileOperator(NoteFrame frame) {
 		this.frame = frame;
 //		doc = (HTMLDocument) frame.getMyDocument();
@@ -49,7 +51,7 @@ public class FileOperator {
 		JFileChooser chooser = new JFileChooser(defaultPath);
 		// chooser.setSelectedFile(new File("*.txt"));// 设置默认选中文件名称
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"HTML & html文件", "HTML", "html");// 设置可选文件后缀名
+				ext[0],ext[1],ext[2]);// 设置可选文件后缀名
 		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
 		chooser.setFileFilter(filter);
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -101,6 +103,14 @@ public class FileOperator {
 //					frame.textPane.setDocument(frame.htmldoc);
 					input.close();
 					in.close();
+				}catch( StreamCorruptedException e){
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(frame, "错误,不支持的文件格式,请重新打开支持的文件", "错误", JOptionPane.ERROR_MESSAGE);
+					return;
+				}catch(java.io.EOFException  e){
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(frame, "错误,不支持的文件格式,请重新打开支持的文件", "错误", JOptionPane.ERROR_MESSAGE);
+					return;
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -228,7 +238,7 @@ public class FileOperator {
 			JFileChooser chooser = new JFileChooser(defaultPath);
 			chooser.setSelectedFile(new File("*.html"));// 设置默认选中文件名称
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(
-					"html & HTML文件", "html", "HTML");// 设置可选文件后缀名
+					ext[0],ext[1],ext[2]);// 设置可选文件后缀名
 			chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
 			chooser.setFileFilter(filter);
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {

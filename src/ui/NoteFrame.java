@@ -852,12 +852,12 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 	}
 
-/*	public static void main(String[] args) {
+	public static void main(String[] args) {
 		// 以下两句必须放在main（）方法中才能生效，且要在创建窗体之前执行
 		JFrame.setDefaultLookAndFeelDecorated(true);// 使标题栏装饰生效
 		JDialog.setDefaultLookAndFeelDecorated(true);// 使对话框装饰生效
 		new NoteFrame();
-	}*/
+	}
 
 	/**
 	 * @return the labelMusic
