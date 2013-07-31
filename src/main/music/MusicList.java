@@ -13,8 +13,8 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import main.music.JMusic;
 import source.Strings;
+import ui.JJList;
 
 public class MusicList {
 	private int i = 0;
@@ -39,7 +39,7 @@ public class MusicList {
 			listStr.add(str);
 		}
 		scroll = new JScrollPane();
-		musicList = new JList<String>();
+		musicList = new JJList<String>();
 		musicList.setFont(new Font("微软雅黑", Font.BOLD, 14));
 		musicList.setBackground(new Color(100, 200, 250));
 		musicList.setFixedCellWidth(200);

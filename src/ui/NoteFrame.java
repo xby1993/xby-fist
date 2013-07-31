@@ -41,11 +41,13 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
@@ -64,7 +66,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.StyledEditorKit;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.undo.UndoManager;
@@ -73,6 +78,9 @@ import main.event.NoteFrameEvent;
 import main.music.JMusic;
 import main.music.MusicList;
 import main.operation.FileOperator;
+import main.operation.FontFrame;
+import main.operation.FontSizeFrame;
+import main.operation.InitText;
 import main.thread.ThreadBean;
 import source.Strings;
 
@@ -85,9 +93,6 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private final String trayIconPath = "/source/image/splash.jpg";
 	private Preferences root = Preferences.userRoot();
 	private Preferences node = root.node("com.xby.preferen");
-	private Action boldAction = new StyledEditorKit.BoldAction();
-	private Action italicAction = new StyledEditorKit.ItalicAction();
-	private Action underlineAction = new StyledEditorKit.UnderlineAction();
 	private JButton boldButton, italicButton, underlineButton;
 	private static final long serialVersionUID = 1L;
 	private MusicList musicListdata = new MusicList();
@@ -109,11 +114,11 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private String[][] jitemStr = {
 			{ "新建", "打开", "保存", "另存为", "", "页面设置", "打印", "", "退出" },
 			{ "插入图片", "撤销", "恢复", "剪切", "复制", "粘贴", "删除", "全选" },
-			{ "查找", "查找下一个", "替换", "转到" }, { "" }, { "说明", "关于" } };
+			{ "查找", "替换"}, { "" }, { "说明", "关于" } };
 	// 设置快捷键绑定
 	private char[][] shortcut = {
 			{ 'N', 'O', 'S', ' ', ' ', ' ', 'P', ' ', 'E' },
-			{ ' ', 'U', 'Y', 'X', 'C', 'V', 'D', 'A' }, { 'F', 'G', 'R', 'L' },
+			{ ' ', 'U', 'Y', 'X', 'C', 'V', 'D', 'A' }, { 'F', 'R'},
 			{ ' ' }, { ' ', ' ' } };
 	// 右键菜单
 	private JPopupMenu pmenu;
@@ -181,32 +186,11 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				getClass().getResource(trayIconPath)));
 		// setFont(new
 		// Font(strResource.getFont_Familly_Name().get(5),Font.PLAIN,14));
+		if (textList.get(0) != null) {
+			new InitText(textList.get(0)).start();
+		}
 		pack();
 		setLocationRelativeTo(null);
-		// 先关闭默认操作
-		/*
-		 * setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); addWindowListener(new
-		 * WindowAdapter() { public void windowClosing(WindowEvent we) { new
-		 * FileOperator(NoteFrame.this).exit(); } });
-		 */
-		/*
-		 * try { //
-		 * UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel"
-		 * ); //
-		 * UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
-		 * ); UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
-		 * } catch (ClassNotFoundException | InstantiationException |
-		 * IllegalAccessException | UnsupportedLookAndFeelException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } //
-		 * setDefaultCloseOperation(EXIT_ON_CLOSE); //
-		 * JFrame.setDefaultLookAndFeelDecorated(false);
-		 * 
-		 * SwingUtilities.updateComponentTreeUI(this);//使更改的lookandfeel立即生效
-		 */
-		// Graphics2D g2=(Graphics2D)getGraphics();
-		// g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-		// RenderingHints.VALUE_ANTIALIAS_ON);
-		// repaint();
 		SetLookAndFeel.setLookAndFeel(this);
 		music.setPlayingMusicIndex(node.getInt("i", 0) - 1);
 		setVisible(true);
@@ -267,35 +251,60 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	}
 
 	void initFormat(JMenu menu) {
-		Action action = new StyledEditorKit.BoldAction();
-		action.putValue(Action.NAME, "Bold");
-		menu.add(action);
+//		Action action = new StyledEditorKit.BoldAction();
+//		action.putValue(Action.NAME, "Bold");
+//		menu.add(action);
+		JMenuItem sizeMenu = new JJMenuItem("字体大小");
+		sizeMenu.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new FontSizeFrame(getJJTextPane());
+			}
+		});
+		JMenuItem colorItem = new JJMenuItem("颜色选择");
+		colorItem.addActionListener(new ActionListener() {
 
-		action = new StyledEditorKit.ItalicAction();
-		action.putValue(Action.NAME, "Italic");
-		menu.add(action);
-
-		action = new StyledEditorKit.UnderlineAction();
-		action.putValue(Action.NAME, "Underline");
-		menu.add(action);
-
-		menu.addSeparator();
-
-		menu.add(new StyledEditorKit.FontSizeAction("12", 12));
-		menu.add(new StyledEditorKit.FontSizeAction("14", 14));
-		menu.add(new StyledEditorKit.FontSizeAction("18", 18));
-
-		menu.addSeparator();
-
-		menu.add(new StyledEditorKit.FontFamilyAction("Serif", "Serif"));
-		menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
-
-		menu.addSeparator();
-
-		menu.add(new StyledEditorKit.ForegroundAction("Red", Color.red));
-		menu.add(new StyledEditorKit.ForegroundAction("Green", Color.green));
-		menu.add(new StyledEditorKit.ForegroundAction("Blue", Color.blue));
-		menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Color reply = JColorChooser.showDialog(null, "颜色选择", Color.red);
+				if (reply != null) {
+					// colorMenu.add(new
+					// StyledEditorKit.ForegroundAction(reply.toString(),
+					// reply));
+					MutableAttributeSet attr = new SimpleAttributeSet();
+					StyleConstants.setForeground(attr, reply);
+					// setCharacterAttributes(getJJTextPane(), attr, false);
+					getJJTextPane().setCharacterAttributes(attr, false);
+					try {
+						getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+					} catch (BadLocationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					StyleConstants.setForeground(attr, Color.BLACK);
+					getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+					
+				}
+			}
+		});
+		JMenuItem fontItem=new JJMenuItem("字体风格选择");
+			fontItem.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					new FontFrame(getJJTextPane());
+				}
+			});
+		menu.add(fontItem);
+		menu.add(colorItem);
+		menu.add(sizeMenu);
+		// menu.add(new StyledEditorKit.FontSizeAction("14", 14));
+//		menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
+//		menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
 	}
 
 	void initBar() {
@@ -311,7 +320,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		for (int i = 0; i < jmenu.length; i++) {
 			if (i == 3)
 				continue;
-			jmenu[i] = new JMenu(jmenuStr[i]);
+			jmenu[i] = new JJMenu(jmenuStr[i]);
 			jmenu[i].setCursor(cursor);
 			jitem[i] = new JJMenuItem[jitemStr[i].length];
 			for (int j = 0; j < jitem[i].length; j++) {
@@ -383,16 +392,67 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		for (int i = 0; i < wetherStr.length; i++) {
 			wether.addItem(wetherStr[i]);
 		}
-		boldAction.putValue(Action.NAME, "粗体");
-		italicAction.putValue(Action.NAME, "斜体");
-		underlineAction.putValue(Action.NAME, "下划线");
 		buttonPic = new JButton("插入图片");
 		buttonPic.addActionListener(this);
-		boldButton = new JButton(boldAction);
-		boldButton.setFont(new Font(strResource.getFont_Familly_Name().get(5),
-				Font.PLAIN, 14));
-		italicButton = new JButton(italicAction);
-		underlineButton = new JButton(underlineAction);
+		boldButton = new JJButton("粗体");
+		italicButton = new JJButton("斜体");
+		underlineButton = new JJButton("下划线");
+		//添加标签
+		tabAdd();
+		boldButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				SimpleAttributeSet attr = new SimpleAttributeSet();
+				StyleConstants.setBold(attr, true);
+				getJJTextPane().setCharacterAttributes(attr, false);
+				try {
+					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				StyleConstants.setBold(attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+			}
+		});
+		italicButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				SimpleAttributeSet attr = new SimpleAttributeSet();
+				StyleConstants.setItalic(attr, true);
+				getJJTextPane().setCharacterAttributes(attr, false);
+				try {
+					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				StyleConstants.setItalic(attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+			}
+		});
+		underlineButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				SimpleAttributeSet attr = new SimpleAttributeSet();
+				StyleConstants.setUnderline(attr, true);
+				getJJTextPane().setCharacterAttributes(attr, false);
+				try {
+					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				StyleConstants.setUnderline(attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+			}
+		});
 		Box box = Box.createHorizontalBox();
 		box.add(new JLabel("日期"));
 		box.add(date);
@@ -416,7 +476,6 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		box3.add(box2);
 		panel1.add(box3, BorderLayout.NORTH);
 		panel1.setCursor(cursor);
-		tabAdd();
 		// initTextPane();
 		// tabPane.add("pane0", new JScrollPane(textPane));
 		// tabPane.setTabComponentAt(0, new ButtonTab(tabPane));// 用于设置可关闭Tab头部
@@ -425,35 +484,6 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
 	}
 
-	// void initTextPane(){
-	// textPane=new JJTextPane();
-	// htmldoc=new HTMLDocument();
-	// textPane.setFont(new Font("黑体", 20, 20));
-	// textPane.setEnabled(true);
-	// textPane.setVisible(true);
-	// editKit = new HTMLEditorKit();
-	// // 实例化一个HTMLEditorkit工具包，用来编辑和解析用来显示在JJTextPane中的内容。
-	// // doci = (HTMLDocument) editKit.createDefaultDocument();
-	// // 使用HTMLEditorKit类的方法来创建一个文档类，HTMLEditorKit创建的类型默认为htmldocument。
-	// // 设置JJTextPane组件的编辑器工具包，是其支持html格式。
-	// // textPanei.setContentType("text/html");
-	// // 设置编辑器要处理的文档内容类型，有text/html,text/rtf.text/plain三种类型。
-	// textPane.setEditorKit(editKit);
-	// textPane.setDocument(htmldoc);
-	// // textPane.setTabSize(2);// 设置tab键大小
-	//
-	// textPane.setBorder(new LineBorder(Color.BLUE, 4, true));
-	// textPane.getDocument().addUndoableEditListener(new UndoableEditListener()
-	// {
-	//
-	// @Override
-	// public void undoableEditHappened(UndoableEditEvent e) {
-	// // TODO Auto-generated method stub
-	// undoManager.addEdit(e.getEdit());
-	// }
-	// });// 添加可撤销、恢复编辑监听
-	// textPane.setComponentPopupMenu(pmenu);
-	// }
 	public void tabAdd() {
 		tabs = tabPane.getTabCount();
 		// tabs = getTextList().size();
@@ -464,7 +494,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		JJTextPane textPanei = new JJTextPane();
 		HTMLDocument doci = new HTMLDocument();
 		// textPanei.setFont(new Font("黑体", 20, 20));
-		textPanei.setFont(new Font("方正黑体_GBK", Font.PLAIN, 14));
+		
 		// textPane.setLineWrap(true);// 设置自动换行
 		// textPane.setWrapStyleWord(true);// 激活断行不断字功能
 		textPanei.setEnabled(true);
@@ -478,15 +508,18 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// 设置编辑器要处理的文档内容类型，有text/html,text/rtf.text/plain三种类型。
 		textPanei.setEditorKit(editKit);
 		// textPane.setTabSize(2);// 设置tab键大小
-
+		docList.add(doci);
+		textPanei.setDocument(docList.get(i));
+		MutableAttributeSet attr = new SimpleAttributeSet();
+		StyleConstants.setFontSize(attr, 16);
+		textPanei.setCharacterAttributes(attr, false);
+		textPanei.setFont(new Font("仿宋", Font.PLAIN, 16));
 		JScrollPane scrollPanei = new JScrollPane(textPanei);
 		textPanei.setBorder(new LineBorder(Color.BLUE, 4, true));
 		// scrollpane = new JScrollPane(textArea);
 		// panel1=uii.getPanel(imgPath);
 
 		textList.add(textPanei);
-		docList.add(doci);
-		textPanei.setStyledDocument(docList.get(i));
 		// textPanei.getDocument().addUndoableEditListener(this);// 添加可撤销、恢复编辑监听
 		textPanei.getDocument().addUndoableEditListener(
 				new UndoableEditListener() {
@@ -810,7 +843,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		public void paint(Graphics g) {
 			setOpaque(false);// 设置false以便于设置背景
 			// 启用图像缓存设置好图像。
-			
+
 			BufferedImage bufImg = new BufferedImage(img.getWidth(null),
 					img.getHeight(null), BufferedImage.TYPE_3BYTE_BGR);
 			Graphics2D g2d = bufImg.createGraphics();
@@ -832,7 +865,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 					img.getHeight(null));
 			TexturePaint tu = new TexturePaint(bufImg, rectan);
 			// 用创建的纹理填充来填充整个面板
-	
+
 			g2d = (Graphics2D) g;
 			// 用于抗锯齿
 			/*

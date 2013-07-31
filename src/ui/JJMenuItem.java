@@ -3,6 +3,7 @@ package ui;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.swing.Action;
 import javax.swing.JMenuItem;
 
 public class JJMenuItem extends JMenuItem {
@@ -15,7 +16,9 @@ public class JJMenuItem extends JMenuItem {
 		// TODO Auto-generated constructor stub
 		super(string); 
 	}
-
+	public JJMenuItem(Action a){
+		super(a);
+	}
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d=(Graphics2D)g;

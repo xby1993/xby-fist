@@ -5,34 +5,31 @@ package main.event;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 
 import main.operation.Edit;
 import main.operation.FileOperator;
 import main.operation.Help;
-import main.operation.MyFont;
 import main.thread.ThreadBean;
+import ui.JJButton;
+import ui.JJLabel;
 import ui.JJTextPane;
 import ui.NoteFrame;
 
@@ -40,6 +37,8 @@ public class NoteFrameEvent {
 	private int findnextcount = 0;
 	private JJTextPane textPane;
 	private NoteFrame frame;
+	private int count;
+	private int index;
 	public NoteFrameEvent(NoteFrame frame){
 		this.frame=frame;
 		textPane=frame.getJJTextPane();
@@ -74,9 +73,17 @@ public class NoteFrameEvent {
 			public void actionPerformed(ActionEvent e) {
 				String sfind = jtf1.getText();
 				String sreplace = jtf2.getText();
-				String cur = textPane.getText();
+				StyledDocument doc=textPane.getStyledDocument();
+				String cur="";
+				try {
+					cur = doc.getText(0, doc.getLength());
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				if (cur.indexOf(sfind) == -1) {
 					unfind();
+					System.out.println("进入这里");
 				} else {
 					if (textPane.getCaretPosition() == cur.length()) {
 						textPane.setCaretPosition(0);
@@ -95,7 +102,14 @@ public class NoteFrameEvent {
 				while (true) {
 					String sfind = jtf1.getText();
 					String sreplace = jtf2.getText();
-					String cur = textPane.getText();
+					StyledDocument doc=textPane.getStyledDocument();
+					String cur="";
+					try {
+						cur = doc.getText(0,doc.getLength());
+					} catch (BadLocationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					if (cur.indexOf(sfind) == -1) {
 						break;
 					}
@@ -112,77 +126,100 @@ public class NoteFrameEvent {
 
 	void find() {
 		JFrame jfind = new JFrame("查找");
-		JLabel jl2 = new JLabel("请输入要查询的字符串：");
+		JLabel jl2 = new JJLabel("请输入要查询的字符串：");
 		final JTextField jtf1 = new JTextField(10);
-		JButton jb1 = new JButton("查找/查下一个");
-		final JRadioButton up = new JRadioButton("向上(U)");
-		final JRadioButton down = new JRadioButton("向下(D)", true);// 默认向下找
+		JButton jb1 = new JJButton("查找/查下一个");
+//		final JRadioButton up = new JRadioButton("向上(U)");
+//		final JRadioButton down = new JRadioButton("向下(D)", true);// 默认向下找
 		ButtonGroup bg = new ButtonGroup();
-		bg.add(up);
-		bg.add(down);
+//		bg.add(up);
+//		bg.add(down);
 		Box box1 = Box.createHorizontalBox();
-		box1.setBorder(BorderFactory.createTitledBorder("方向"));
-		box1.add(Box.createHorizontalStrut(5));
-		box1.add(up);
-		box1.add(Box.createHorizontalStrut(5));
-		box1.add(down);
-		box1.add(Box.createHorizontalStrut(5));
+//		box1.setBorder(BorderFactory.createTitledBorder("方向"));
+//		box1.add(Box.createHorizontalStrut(5));
+//		box1.add(up);
+//		box1.add(Box.createHorizontalStrut(5));
+//		box1.add(down);
+//		box1.add(Box.createHorizontalStrut(5));
 		jfind.setLayout(new FlowLayout());
 		jfind.add(jl2);
 		jfind.add(jtf1);
 		jfind.add(box1);
 		jfind.add(jb1);
-		jfind.setSize(400, 200);
+		jfind.setSize(200, 200);
 		jfind.setVisible(true);
 		jfind.setLocationRelativeTo(null);
-
+		count = 0;
+		index = 0;
 		jb1.addActionListener(new ActionListener() {// 按钮“查找/查下一个”的监听器方法
 			public void actionPerformed(ActionEvent e) {
 
 				String sfind = jtf1.getText();
-				String cur = textPane.getText();
-				String find = jtf1.getText();
-				String main = textPane.getText().replaceAll("\n", "");
-				int count = 1;
-				int length = main.length() - find.length() + 1;
-				if (length > 0) {
-					int[] start = new int[length];// 标记匹配处开头位置，最多有Length个匹配的开头坐标值
-					for (int i = 0; i < length; i++) {
-						if (main.substring(i, i + find.length()).equals(find)) {
-							// 要记下i的位置
-							start[count] = i;
-							count++;
-						}
-					}
-
-					if (cur.indexOf(sfind) == -1) {
-						unfind();
-					} else if (findnextcount >= count) {
-						findnextcount = 0;
-					} else if (findnextcount < count) {
-						textPane.setSelectedTextColor(Color.RED);
-						if (up.isSelected()) {
-							textPane.select(
-									start[count - findnextcount],
-									start[count - findnextcount]
-											+ find.length());
-						} else if (down.isSelected()) {
-							textPane.select(start[findnextcount],
-									start[findnextcount] + find.length());
-						}
-						if (textPane.getCaretPosition() == cur.length()) {
-							textPane.setCaretPosition(0);
-						}
-						textPane.setSelectionStart(cur.indexOf(sfind,
-								textPane.getCaretPosition()));
-						textPane.setSelectionEnd(cur.indexOf(sfind,
-								textPane.getCaretPosition())
-								+ sfind.length());
-					}
+				StyledDocument doc=textPane.getStyledDocument();
+				String cur="";
+				try {
+					cur = doc.getText(0,doc.getLength());
+				} catch (BadLocationException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
-				findnextcount++;
+				
+				if((index=cur.indexOf(sfind,index))!=-1){
+					
+//					int index=cur.indexOf(sfind,);
+					textPane.setSelectionStart(index);
+					textPane.setSelectionEnd(index+sfind.length());
+					textPane.setSelectedTextColor(Color.RED);
+					index=index+sfind.length();
+//					count++;
+				}
+//				String main="";
+//				try {
+//					main = doc.getText(0,doc.getLength());
+//				} catch (BadLocationException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				int count = 1;
+//				int length = main.length() - find.length() + 1;
+//				if (length > 0) {
+//					int[] start = new int[length];// 标记匹配处开头位置，最多有Length个匹配的开头坐标值
+//					for (int i = 0; i < length; i++) {
+//						if (main.substring(i, i + find.length()).equals(find)) {
+//							// 要记下i的位置
+//							start[count] = i;
+//							count++;
+//						}
+//					}
+//
+//					if (cur.indexOf(sfind) == -1) {
+//						unfind();
+//					} else if (findnextcount >= count) {
+//						findnextcount = 0;
+//					} else if (findnextcount < count) {
+//						textPane.setSelectedTextColor(Color.RED);
+//						if (up.isSelected()) {
+//							textPane.select(
+//									start[count - findnextcount],
+//									start[count - findnextcount]
+//											+ find.length());
+//						} else if (down.isSelected()) {
+//							textPane.select(start[findnextcount],
+//									start[findnextcount] + find.length());
+//						}
+//						if (textPane.getCaretPosition() == cur.length()) {
+//							textPane.setCaretPosition(0);
+//						}
+//						textPane.setSelectionStart(cur.indexOf(sfind,
+//								textPane.getCaretPosition()));
+//						textPane.setSelectionEnd(cur.indexOf(sfind,
+//								textPane.getCaretPosition())
+//								+ sfind.length());
+//					}
+//				}
+//				findnextcount++;
 			}
-
+//
 		});
 	}
 	void unfind() {
@@ -197,34 +234,12 @@ public void actionEvent(ActionEvent event){
 	case "说明":
 		Help.help();
 		break;
-	case "字体":
-		new MyFont(new Font("SansSerif", 16, 16), null).showDialog(null);
-		break;
-	case "颜色":
-		Color color = JColorChooser.showDialog(null, "字体颜色选择", Color.red);
-		if (color != null) {
-			SimpleAttributeSet attr = new SimpleAttributeSet();
-			StyleConstants.setFontFamily(attr, "SansSerif");
-			StyleConstants.setFontSize(attr, 14);
-			StyleConstants.setForeground(attr, color);
-			int pos = textPane.getSelectionStart();
-			int end = textPane.getSelectionEnd();
-			if (pos > end) {
-				int tmp = end;
-				end = pos;
-				pos = tmp;
-			}
-
-			textPane.getStyledDocument().setCharacterAttributes(pos, end - pos + 1, attr, true);
-		}
-
-		break;
 	case "查找":
-	case "查找下一个":
+//	case "查找下一个":
 		find();
 		break;
 	case "替换":
-	case "转到":
+//	case "转到":
 		replace();
 		break;
 	case "插入图片":

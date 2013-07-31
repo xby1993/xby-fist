@@ -12,7 +12,7 @@ public class SetLookAndFeel {
 //			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 //			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 			UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
-			com.setResizable(true);
+//			com.setResizable(true);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			// TODO Auto-generated catch block

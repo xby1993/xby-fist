@@ -19,6 +19,7 @@ public class JJPanel extends JPanel {
 	Graphics2D g2d;
 	private Image img;
 	private static String imgPath = " ";
+	private boolean isImgPanel=true;
 	public JJPanel(String imgPath) {
 		setImgPath(imgPath);
 		// Dimension size=new Dimension(img.getWidth(null),img.getHeight(null));
@@ -27,10 +28,16 @@ public class JJPanel extends JPanel {
 		// setMinimumSize(size);
 		// setMaximumSize(size);
 	}
-
+	public JJPanel(){
+		isImgPanel=false;
+	}
 	public void paint(Graphics g) {
 //		 img=new ImageIcon(getImgPath()).getImage();
-
+		if(!isImgPanel){
+			new ObjectRec((Graphics2D)g).setObjectRec();
+			super.paint(g);
+			return;
+		}
 		img = new ImageIcon(JJPanel.class.getResource(getImgPath())).getImage();
 		
 //		imgInit();

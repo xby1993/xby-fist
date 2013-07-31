@@ -38,7 +38,24 @@ public final class Strings {
 	private String[] font_Name = GraphicsEnvironment
 			.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 	private ArrayList<String> font_Familly_Name=new ArrayList<String>(15);
-
+	private static final String manual="\t\t\t欢迎使用小白杨作品-日记本软件RC1.0\n\n"+
+			"\t1.支持音乐选择功能,断点续播功能,拖动滑块快进快退功能\n" +
+			"\t1.2.支持单曲循环,列表循环,随机播放模式\n" +
+			"\t1.3.支持自定义背景音乐\n"+
+			"\t1.4只要你将音乐文件放入软件目录下的-music_dir-目录即可,"+"音乐格式仅支持mp3\n"+
+			"\t1.5支持音乐标签霓虹灯效果\n"+
+			"\t2.支持自定义背景图片,并幻灯片播放,只需将自己的图片放入-img_dir-目录即可\n"+
+			"\t3.采用kde风格界面,界面精致美观\n"+
+			"\t4.支持富文本编辑以及插入图片文件\n"+
+			"\t5.采用二进制形式保存用户的日记文件,有效保证了安全性\n"+
+			"\t5.1.对用户密码采用SHA-1算法,有效保证安全性"+
+			"\t6.支持日志记录\n"+
+			"\t7.下一版本将集成数据库,敬请期待\n"+
+			"\t8.支持启动闪屏\n"+
+			"\t9.支持系统托盘\n"+
+			"\t10.点击窗口的x其实是最小化到系统托盘,您可以右击托盘图标选择关闭按钮\n"+
+			"\t11.添加水印签名"+
+			"\t12.欢迎及时反馈BUG,及新想法";
 	/**
 	 * 一个获得文件列表的工具方法，以便代码复用
 	 * 
@@ -290,5 +307,12 @@ public final class Strings {
 	 */
 	public void setFont_Familly_Name(ArrayList<String> font_Familly_Name) {
 		this.font_Familly_Name = font_Familly_Name;
+	}
+
+	/**
+	 * @return the manual
+	 */
+	public static String getManual() {
+		return manual;
 	}
 }
