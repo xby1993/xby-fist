@@ -27,28 +27,44 @@ import source.Strings;
 import ui.JJLabel;
 
 public class JMusic {
+	//正在播放的音乐索引
 	private static int i = 0;
+	//字符串资源
 	private Strings strRes = new Strings();
+	//储存音乐列表
 	private ArrayList<String> musicList = strRes.getListMusic();
+	//音乐播放状态是关闭还是打开
 	private static boolean state = false;
+	//音乐播放相关
 	private SourceDataLine line;
 	private AudioInputStream ins;
 	private Line.Info info = new Line.Info(Clip.class);
+	//如果用户不自定义音乐,则设置默认的音乐
 	private String defaultMusic = musicList.get(0);
+	//音乐还没播放完毕的控制
 	private boolean musicNotOver = true;
 	private AudioFormat audioFormat;
 	private DataLine.Info dataLineInfo;
+	//音乐播放线程
 	private JMusic.PlayThread playThread = new JMusic.PlayThread(this);
 	private Thread thread = new Thread(playThread);
+	//音乐是否被用户改变
 	private static boolean musicChaged = true;
+	//用户是否改变列表的选择项
 	private static boolean select = false;
+	//用户选择的音乐
 	private static String selectMusic = "";
+	//音乐名称标签
 	private JJLabel label;
 	private Strings resStr = new Strings();
 	private long playCount;
+	//音乐时间标签
 	private JLabel labelTime;
+	//进度条
 	private JProgressBar progress;
+	//音乐滑块
 	private JSlider slider;
+	//音乐已经播放的长度
 	private long playLen;
 
 	public JMusic() {
@@ -62,7 +78,9 @@ public class JMusic {
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
 	}
-
+	/**
+	 * 准备音乐播放
+	 */
 	void preparePlaying() {
 		try {
 			if (isDefaultMusic(defaultMusic)) {
@@ -94,13 +112,19 @@ public class JMusic {
 		}
 		line.start();
 	}
-
+	/**
+	 * 用于判断是否使用默认音乐,如果用户没有自定义的话则返回true
+	 * @param str
+	 * @return
+	 */
 	boolean isDefaultMusic(String str) {
 		if (str.equals(strRes.getDefaultMusic()))
 			return true;
 		return false;
 	}
-
+/**
+ * 音乐播放方法
+ */
 	public void musicOpen() {
 		++playCount;// 用于统计播放次数,第一次播放需要启动线程,其他的只需修改statefield通知线程即可
 		JMusic.state = true;
@@ -115,12 +139,18 @@ public class JMusic {
 		 */
 
 	}
-
+	/**
+	 * 音乐关闭方法
+	 */
 	public void musicShut() {
 		JMusic.state = false;
 
 	}
-
+/**
+ * 音乐播放线程类
+ * @author xby64
+ *
+ */
 	class PlayThread implements Runnable {
 
 		private int cnt = 0;
@@ -171,7 +201,9 @@ public class JMusic {
 			labelAnim1.setAnim();
 		}
 
-		// 设置正在播放的音乐文件名显示标签
+		/**
+		 * 设置正在播放的音乐文件名显示标签
+		 */
 		void setPlayName() {
 			String name=musicList.get(i-1);
 			name=name.substring(
@@ -435,7 +467,10 @@ public class JMusic {
 		}
 
 	}
-
+	/**
+	 * 音乐格式选择方法
+	 * @return
+	 */
 	AudioInputStream musicFormatSelect() {
 		try {
 			Logger.getLogger("com.xby.log").info(i + ":" + 126);

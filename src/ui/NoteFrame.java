@@ -89,27 +89,33 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 1L;
+	//托盘相关
 	private final String trayHints = "温馨提示:感谢您的使用,您可以右击或者双击系统托盘进行选择";
 	private final String trayIconPath = "/source/image/splash.jpg";
+	//首选项相关
 	private Preferences root = Preferences.userRoot();
 	private Preferences node = root.node("com.xby.preferen");
+	//字体按钮相关
 	private JButton boldButton, italicButton, underlineButton;
-	private static final long serialVersionUID = 1L;
+	//音乐列表相关
 	private MusicList musicListdata = new MusicList();
 	private JScrollPane musicList = musicListdata.getMusicList();
+	//多标签式浏览相关
 	private JTabbedPane tabPane = new JTabbedPane(JTabbedPane.NORTH,
 			JTabbedPane.SCROLL_TAB_LAYOUT);
 	private File tempFile;
 	private Cursor cursor = new Cursor(Cursor.HAND_CURSOR);// 设置光标
-	private JMusic music = new JMusic();
+	private JMusic music = new JMusic();//音乐类实例
 	private int tabs;
-	private JButton buttonPic;
+	private JButton buttonPic;//插入图片按钮
 	/** 用于控制歌曲上下播放按钮 */
 	private JButton fowardButton, backButton;
 	/** 用于显示音乐播放进度 */
 	private JProgressBar progress = new JProgressBar(0, 100);
 	// 菜单条
 	private JJMenuBar menuBar;
+	//菜单设置字符资源
 	private String[] jmenuStr = { "文件", "编辑", "搜索", "格式", "帮助" };
 	private String[][] jitemStr = {
 			{ "新建", "打开", "保存", "另存为", "", "页面设置", "打印", "", "退出" },
@@ -126,6 +132,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
 	// 编辑文字区
 	public JJTextPane textPane;
+	//使用列表储存标签中的组件
 	private ArrayList<JJTextPane> textList = new ArrayList<JJTextPane>();
 	public HTMLDocument htmldoc;
 	private ArrayList<HTMLDocument> docList = new ArrayList<HTMLDocument>();
@@ -134,19 +141,19 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private JScrollPane scrollpane;
 	private Box box3;
 	private Image img;
-	// private String playingMusic = "";
 	// 标示状态的工具条
-	// private JToolBar status;
-	// private JLabel currentstatus;
-	String statusinfo = "";
-	Timer timer = new Timer();
-	Strings strResource = new Strings();
+	//用于背景图片变化的定时器
+	private Timer timer = new Timer();
+	//字符串资源实例
+	private Strings strResource = new Strings();
 	private JTextField date;// 日期输入框
-	// String[] imgPathStr = { "/source/image/1.jpg", "/source/image/2.jpg",
+	//使用列表储存图片资源索引
 	private ArrayList<String> imgPathStr = strResource.getListIMG();
 	// private ArrayListMusic<String> music
-	String imgPath = imgPathStr.get(0);
-	JPanel panel1, panel2;
+	//面板背景图片
+	private String imgPath = imgPathStr.get(0);
+	//主要面板
+	private JPanel panel1, panel2;
 	private JRadioButton musicOn, musicOff, taskOn, taskOff;// 背景音乐开关
 	private JComboBox<String> day, wether;// 时间,天气选择下拉列表.
 
@@ -196,7 +203,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		setVisible(true);
 
 	}
-
+	/**
+	 * 设置系统托盘
+	 */
 	void initSystemTray() {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
@@ -249,7 +258,10 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
 		}
 	}
-
+	/**
+	 * 初始化格式菜单
+	 * @param menu
+	 */
 	void initFormat(JMenu menu) {
 //		Action action = new StyledEditorKit.BoldAction();
 //		action.putValue(Action.NAME, "Bold");
@@ -306,7 +318,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 //		menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
 //		menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
 	}
-
+	/**
+	 * 初始化菜单栏
+	 */
 	void initBar() {
 		// 初始化文件菜单
 		Logger.getLogger("com.xby.log").info(0 + "-->" + imgPathStr.get(0));
@@ -348,7 +362,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// initTextArea();
 
 	}
-
+	/**
+	 * 初始化总体面板
+	 */
 	void initPanel3() {
 		initPanel1();
 		initPanel2();
@@ -362,7 +378,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		add(pane1);
 
 	}
-
+	/**
+	 * 初始化弹出菜单
+	 */
 	void initPopMenu() {
 		pmenu = new JPopupMenu();
 		JJMenuItem[] jpopItem = new JJMenuItem[jpopItemStr.length];
@@ -374,7 +392,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 
 	}
-
+	/**
+	 * 初始化面板一
+	 */
 	void initPanel1() {
 		// MyPanel.setImgPath(imgPath);
 		panel1 = new MyPanel();
@@ -483,7 +503,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		panel1.setVisible(true);
 
 	}
-
+	/**
+	 * 添加标签方法
+	 */
 	public void tabAdd() {
 		tabs = tabPane.getTabCount();
 		// tabs = getTextList().size();
@@ -544,7 +566,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// htmldoc = textPane.getDocument();
 
 	}
-
+	/**
+	 * 初始化面板2
+	 */
 	void initPanel2() {
 		// 设置背景的控件
 		// panel2=uii.getPanel(imgPath);
@@ -694,7 +718,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		panel2.setVisible(true);
 
 	}
-
+	/**
+	 * 主要动作处理
+	 */
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		int i = tabPane.getSelectedIndex();
@@ -770,7 +796,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		return date.getText() + "   " + day.getSelectedItem() + "   "
 				+ wether.getSelectedItem();
 	}
-
+	/**
+	 * 用于背景图片变化的定时器任务
+	 */
 	TimerTask task = new TimerTask() {
 
 		int i = 0;
@@ -797,7 +825,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private JSlider slider;
 
 	// private JRadioButton[] background;
-
+	/**
+	 * 打开关闭定时器相关方法
+	 */
 	void taskOpen() {
 
 		timer.schedule(task, 10000, 10000);
@@ -806,11 +836,17 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	void taskCancel() {
 		timer.cancel();
 	}
-
+	/**
+	 * 返回正在编辑的标签索引
+	 * @return
+	 */
 	public int getSelectTabIndex() {
 		return tabPane.getSelectedIndex();
 	}
-
+	/**
+	 *设置面板图片
+	 * @param path
+	 */
 	private void setImg(String path) {
 		this.imgPath = path;
 		// img=new ImageIcon(NoteFrame.class.getResource(imgPath)).getImage();
@@ -833,6 +869,11 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	 * public void setAlpha(boolean b) { isAlpha = b; }
 	 * 
 	 * public boolean isAlpha() { return isAlpha; }
+	 */
+	/**
+	 * 带有背景图片的面板内部类
+	 * @author xby64
+	 *
 	 */
 	class MyPanel extends JPanel {
 		/**
