@@ -16,8 +16,8 @@ public class Help {
 	new JJDialog(about).look();
 	}
 	public static void help(){
-		String manual=Strings.getManual();
+		String about=Strings.getInstance().getAbout();
 //		JJOptionPane.showMessageDialog(null,manual, "使用手册" ,JOptionPane.PLAIN_MESSAGE);
-		new JJDialog(manual).look();
+		new JJDialog(about).look();
 	}
 }

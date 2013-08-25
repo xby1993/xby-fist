@@ -4,11 +4,17 @@
 package main.event;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.MalformedURLException;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -20,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
@@ -32,6 +39,7 @@ import ui.JJButton;
 import ui.JJLabel;
 import ui.JJTextPane;
 import ui.NoteFrame;
+import ui.PaintPanel;
 
 public class NoteFrameEvent {
 	private int findnextcount = 0;
@@ -39,11 +47,13 @@ public class NoteFrameEvent {
 	private NoteFrame frame;
 	private int count;
 	private int index;
-	public NoteFrameEvent(NoteFrame frame){
-		this.frame=frame;
-		textPane=frame.getJJTextPane();
-//		textPane=frame.textPane;
+
+	public NoteFrameEvent(NoteFrame frame) {
+		this.frame = frame;
+		textPane = frame.getJJTextPane();
+		// textPane=frame.textPane;
 	}
+
 	void replace() {// 替换对话框，添加监听器并重写actionPerformed方法
 		JFrame jr = new JFrame("替代");
 		JLabel jl1 = new JLabel("查找：");
@@ -73,8 +83,8 @@ public class NoteFrameEvent {
 			public void actionPerformed(ActionEvent e) {
 				String sfind = jtf1.getText();
 				String sreplace = jtf2.getText();
-				StyledDocument doc=textPane.getStyledDocument();
-				String cur="";
+				StyledDocument doc = textPane.getStyledDocument();
+				String cur = "";
 				try {
 					cur = doc.getText(0, doc.getLength());
 				} catch (BadLocationException e1) {
@@ -102,10 +112,10 @@ public class NoteFrameEvent {
 				while (true) {
 					String sfind = jtf1.getText();
 					String sreplace = jtf2.getText();
-					StyledDocument doc=textPane.getStyledDocument();
-					String cur="";
+					StyledDocument doc = textPane.getStyledDocument();
+					String cur = "";
 					try {
-						cur = doc.getText(0,doc.getLength());
+						cur = doc.getText(0, doc.getLength());
 					} catch (BadLocationException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -129,18 +139,18 @@ public class NoteFrameEvent {
 		JLabel jl2 = new JJLabel("请输入要查询的字符串：");
 		final JTextField jtf1 = new JTextField(10);
 		JButton jb1 = new JJButton("查找/查下一个");
-//		final JRadioButton up = new JRadioButton("向上(U)");
-//		final JRadioButton down = new JRadioButton("向下(D)", true);// 默认向下找
+		// final JRadioButton up = new JRadioButton("向上(U)");
+		// final JRadioButton down = new JRadioButton("向下(D)", true);// 默认向下找
 		ButtonGroup bg = new ButtonGroup();
-//		bg.add(up);
-//		bg.add(down);
+		// bg.add(up);
+		// bg.add(down);
 		Box box1 = Box.createHorizontalBox();
-//		box1.setBorder(BorderFactory.createTitledBorder("方向"));
-//		box1.add(Box.createHorizontalStrut(5));
-//		box1.add(up);
-//		box1.add(Box.createHorizontalStrut(5));
-//		box1.add(down);
-//		box1.add(Box.createHorizontalStrut(5));
+		// box1.setBorder(BorderFactory.createTitledBorder("方向"));
+		// box1.add(Box.createHorizontalStrut(5));
+		// box1.add(up);
+		// box1.add(Box.createHorizontalStrut(5));
+		// box1.add(down);
+		// box1.add(Box.createHorizontalStrut(5));
 		jfind.setLayout(new FlowLayout());
 		jfind.add(jl2);
 		jfind.add(jtf1);
@@ -155,168 +165,201 @@ public class NoteFrameEvent {
 			public void actionPerformed(ActionEvent e) {
 
 				String sfind = jtf1.getText();
-				StyledDocument doc=textPane.getStyledDocument();
-				String cur="";
+				StyledDocument doc = textPane.getStyledDocument();
+				String cur = "";
 				try {
-					cur = doc.getText(0,doc.getLength());
+					cur = doc.getText(0, doc.getLength());
 				} catch (BadLocationException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				
-				if((index=cur.indexOf(sfind,index))!=-1){
-					
-//					int index=cur.indexOf(sfind,);
+
+				if ((index = cur.indexOf(sfind, index)) != -1) {
+
+					// int index=cur.indexOf(sfind,);
 					textPane.setSelectionStart(index);
-					textPane.setSelectionEnd(index+sfind.length());
+					textPane.setSelectionEnd(index + sfind.length());
 					textPane.setSelectedTextColor(Color.RED);
-					index=index+sfind.length();
-//					count++;
-				}else{
+					index = index + sfind.length();
+					// count++;
+				} else {
 					unfind();
 				}
-//				String main="";
-//				try {
-//					main = doc.getText(0,doc.getLength());
-//				} catch (BadLocationException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				int count = 1;
-//				int length = main.length() - find.length() + 1;
-//				if (length > 0) {
-//					int[] start = new int[length];// 标记匹配处开头位置，最多有Length个匹配的开头坐标值
-//					for (int i = 0; i < length; i++) {
-//						if (main.substring(i, i + find.length()).equals(find)) {
-//							// 要记下i的位置
-//							start[count] = i;
-//							count++;
-//						}
-//					}
-//
-//					if (cur.indexOf(sfind) == -1) {
-//						unfind();
-//					} else if (findnextcount >= count) {
-//						findnextcount = 0;
-//					} else if (findnextcount < count) {
-//						textPane.setSelectedTextColor(Color.RED);
-//						if (up.isSelected()) {
-//							textPane.select(
-//									start[count - findnextcount],
-//									start[count - findnextcount]
-//											+ find.length());
-//						} else if (down.isSelected()) {
-//							textPane.select(start[findnextcount],
-//									start[findnextcount] + find.length());
-//						}
-//						if (textPane.getCaretPosition() == cur.length()) {
-//							textPane.setCaretPosition(0);
-//						}
-//						textPane.setSelectionStart(cur.indexOf(sfind,
-//								textPane.getCaretPosition()));
-//						textPane.setSelectionEnd(cur.indexOf(sfind,
-//								textPane.getCaretPosition())
-//								+ sfind.length());
-//					}
-//				}
-//				findnextcount++;
+				// String main="";
+				// try {
+				// main = doc.getText(0,doc.getLength());
+				// } catch (BadLocationException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
+				// int count = 1;
+				// int length = main.length() - find.length() + 1;
+				// if (length > 0) {
+				// int[] start = new int[length];// 标记匹配处开头位置，最多有Length个匹配的开头坐标值
+				// for (int i = 0; i < length; i++) {
+				// if (main.substring(i, i + find.length()).equals(find)) {
+				// // 要记下i的位置
+				// start[count] = i;
+				// count++;
+				// }
+				// }
+				//
+				// if (cur.indexOf(sfind) == -1) {
+				// unfind();
+				// } else if (findnextcount >= count) {
+				// findnextcount = 0;
+				// } else if (findnextcount < count) {
+				// textPane.setSelectedTextColor(Color.RED);
+				// if (up.isSelected()) {
+				// textPane.select(
+				// start[count - findnextcount],
+				// start[count - findnextcount]
+				// + find.length());
+				// } else if (down.isSelected()) {
+				// textPane.select(start[findnextcount],
+				// start[findnextcount] + find.length());
+				// }
+				// if (textPane.getCaretPosition() == cur.length()) {
+				// textPane.setCaretPosition(0);
+				// }
+				// textPane.setSelectionStart(cur.indexOf(sfind,
+				// textPane.getCaretPosition()));
+				// textPane.setSelectionEnd(cur.indexOf(sfind,
+				// textPane.getCaretPosition())
+				// + sfind.length());
+				// }
+				// }
+				// findnextcount++;
 			}
-//
+			//
 		});
 	}
+
 	void unfind() {
 		JOptionPane.showMessageDialog(null, "查找失败,未找到符合的结果!");
 	}
-public void actionEvent(ActionEvent event){
-	ActionEvent e=event;
-	switch (e.getActionCommand()) {
-	case "关于":
-		Help.about();
-		break;
-	case "说明":
-		Help.help();
-		break;
-	case "查找":
-//	case "查找下一个":
-		find();
-		break;
-	case "替换":
-//	case "转到":
-		replace();
-		break;
-	case "插入图片":
-		insertIcon();
-		break;
-	case "撤销":
-		new Edit(frame).cancel();
-		break;
-	case "恢复":
-		new Edit(frame).recover();
-		break;
-	case "剪切":
-		new Edit(frame).Cut();
-		break;
-	case "复制":
-		new Edit(frame).Copy();
-		break;
-	case "粘贴":
-		new Edit(frame).Paste();
-		break;
-	case "删除":
-		new Edit(frame).Delete();
-		break;
 
-	case "全选":
-		new Edit(frame).SelectAll();
-		break;
-	case "新建":
-		new FileOperator(frame).createFile();
-		break;
-	case "打开":
-//		new FileOperator(frame).openFile();
+	public void actionEvent(ActionEvent event) {
+		ActionEvent e = event;
+		switch (e.getActionCommand()) {
+		case "关于":
+			Help.about();
+			break;
+		case "说明":
+			Help.help();
+			break;
+		case "查找":
+			// case "查找下一个":
+			find();
+			break;
+		case "替换":
+			// case "转到":
+			replace();
+			break;
+		case "插入图片":
+			insertIcon();
+			break;
+		case "撤销":
+			new Edit(frame).cancel();
+			break;
+		case "恢复":
+			new Edit(frame).recover();
+			break;
+		case "剪切":
+			new Edit(frame).Cut();
+			break;
+		case "复制":
+			new Edit(frame).Copy();
+			break;
+		case "粘贴":
+			new Edit(frame).Paste();
+			break;
+		case "删除":
+			new Edit(frame).Delete();
+			break;
+
+		case "全选":
+			new Edit(frame).SelectAll();
+			break;
+		case "新建":
+			new FileOperator(frame).createFile();
+			break;
+		case "打开":
+			// new FileOperator(frame).openFile();
 
 			new FileOperator(frame).readTo();
-		
-		break;
-	case "保存":
-		new FileOperator(frame).saveFile();
-		break;
-	case "另存为":
-		new FileOperator(frame).saveFile();
-		break;
-	case "页面设置":
-		new FileOperator(frame).pageSetup();
-		break;
-	case "打印":
-		new FileOperator(frame).print();
-		break;
-	case "退出":
-		new FileOperator(frame).exit();
-		break;
-	case "上一首":
-		ThreadBean.setBackSong(true);
-		break;
-	case "下一首":
-		ThreadBean.setFowardSong(true);
-		break;
-	default:
-		break;
-	}
-}
-void insertIcon() {
-	JFileChooser chooser = new JFileChooser();
-	FileNameExtensionFilter filter = new FileNameExtensionFilter(
-			"jpg & gif图像文件", "jpg", "JPG", "JPEG", "GIF", "gif");// 设置可选文件后缀名
-	chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
-	chooser.setFileFilter(filter);
-	if (chooser.showOpenDialog(frame) == 0) {
-		File file = chooser.getSelectedFile();
-		if (file.exists()) {
 
-			ImageIcon icon = new ImageIcon(file.getPath());
-			textPane.insertIcon(icon);
+			break;
+		case "保存":
+			new FileOperator(frame).saveFile();
+			break;
+		case "另存为":
+			new FileOperator(frame).saveFile();
+			break;
+		case "页面设置":
+			new FileOperator(frame).pageSetup();
+			break;
+		case "打印":
+			new FileOperator(frame).print();
+			break;
+		case "退出":
+			new FileOperator(frame).exit();
+			break;
+		case "上一首":
+			ThreadBean.setBackSong(true);
+			break;
+		case "下一首":
+			ThreadBean.setFowardSong(true);
+			break;
+		default:
+			break;
 		}
 	}
 
-}
+	public void insertIcon() {
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				"jpg & gif图像文件", "jpg", "JPG", "JPEG", "GIF", "gif");// 设置可选文件后缀名
+		chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
+		chooser.setFileFilter(filter);
+		// final JLabel label=new JLabel();
+		final PaintPanel panel = new PaintPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null,
+				null));
+		panel.setPreferredSize(new Dimension(300, 300));
+		chooser.setAccessory(panel);
+		chooser.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent e) {
+				if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY == e
+						.getPropertyName()) {
+					File picfile = (File) e.getNewValue();
+					if (picfile != null && picfile.isFile()) {
+
+						// String imagePath = picfile.getPath();
+						// panel.setImgPath(imagePath);
+						Image image;
+						try {
+							image = Toolkit.getDefaultToolkit().getImage(
+									picfile.toURI().toURL());
+							panel.setImage(image);
+							panel.repaint();
+						} catch (MalformedURLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+
+					}
+				}
+			}
+		});
+		if (chooser.showOpenDialog(frame) == 0) {
+			File file = chooser.getSelectedFile();
+			if (file.exists()) {
+
+				ImageIcon icon = new ImageIcon(file.getPath());
+				textPane.insertIcon(icon);
+			}
+		}
+
+	}
 }

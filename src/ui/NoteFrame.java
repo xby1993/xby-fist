@@ -5,6 +5,7 @@ import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,28 +25,33 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -53,11 +59,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -66,6 +72,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
@@ -83,6 +90,9 @@ import main.operation.FontSizeFrame;
 import main.operation.InitText;
 import main.thread.ThreadBean;
 import source.Strings;
+import util.ButtonProvider;
+import util.LoopButtonProvider;
+import util.ToolButtonProvider;
 
 public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
@@ -90,49 +100,49 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	//托盘相关
+	// 托盘相关
 	private final String trayHints = "温馨提示:感谢您的使用,您可以右击或者双击系统托盘进行选择";
 	private final String trayIconPath = "/source/image/splash.jpg";
-	//首选项相关
+	// 首选项相关
 	private Preferences root = Preferences.userRoot();
 	private Preferences node = root.node("com.xby.preferen");
-	//字体按钮相关
+	// 字体按钮相关
 	private JButton boldButton, italicButton, underlineButton;
-	//音乐列表相关
+	// 音乐列表相关
 	private MusicList musicListdata = new MusicList();
-	private JScrollPane musicList = musicListdata.getMusicList();
-	//多标签式浏览相关
+	private JList<String> musicList = musicListdata.getMusicList();
+	// 多标签式浏览相关
 	private JTabbedPane tabPane = new JTabbedPane(JTabbedPane.NORTH,
 			JTabbedPane.SCROLL_TAB_LAYOUT);
 	private File tempFile;
 	private Cursor cursor = new Cursor(Cursor.HAND_CURSOR);// 设置光标
-	private JMusic music = new JMusic();//音乐类实例
+	private JMusic music = new JMusic();// 音乐类实例
 	private int tabs;
-	private JButton buttonPic;//插入图片按钮
+	private JButton buttonPic;// 插入图片按钮
 	/** 用于控制歌曲上下播放按钮 */
 	private JButton fowardButton, backButton;
 	/** 用于显示音乐播放进度 */
 	private JProgressBar progress = new JProgressBar(0, 100);
 	// 菜单条
 	private JJMenuBar menuBar;
-	//菜单设置字符资源
+	// 菜单设置字符资源
 	private String[] jmenuStr = { "文件", "编辑", "搜索", "格式", "帮助" };
 	private String[][] jitemStr = {
 			{ "新建", "打开", "保存", "另存为", "", "页面设置", "打印", "", "退出" },
 			{ "插入图片", "撤销", "恢复", "剪切", "复制", "粘贴", "删除", "全选" },
-			{ "查找", "替换"}, { "" }, { "说明", "关于" } };
+			{ "查找", "替换" }, { "" }, { "说明", "关于" } };
 	// 设置快捷键绑定
 	private char[][] shortcut = {
 			{ 'N', 'O', 'S', ' ', ' ', ' ', 'P', ' ', 'E' },
-			{ ' ', 'U', 'Y', 'X', 'C', 'V', 'D', 'A' }, { 'F', 'R'},
-			{ ' ' }, { ' ', ' ' } };
+			{ ' ', 'U', 'Y', 'X', 'C', 'V', 'D', 'A' }, { 'F', 'R' }, { ' ' },
+			{ ' ', ' ' } };
 	// 右键菜单
 	private JPopupMenu pmenu;
 	private String[] jpopItemStr = { "撤销", "恢复", "剪切", "复制", "粘贴", "删除", "全选" };
 
 	// 编辑文字区
 	public JJTextPane textPane;
-	//使用列表储存标签中的组件
+	// 使用列表储存标签中的组件
 	private ArrayList<JJTextPane> textList = new ArrayList<JJTextPane>();
 	public HTMLDocument htmldoc;
 	private ArrayList<HTMLDocument> docList = new ArrayList<HTMLDocument>();
@@ -142,17 +152,17 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private Box box3;
 	private Image img;
 	// 标示状态的工具条
-	//用于背景图片变化的定时器
+	// 用于背景图片变化的定时器
 	private Timer timer = new Timer();
-	//字符串资源实例
-	private Strings strResource = new Strings();
+	// 字符串资源实例
+	private Strings strResource = Strings.getInstance();
 	private JTextField date;// 日期输入框
-	//使用列表储存图片资源索引
+	// 使用列表储存图片资源索引
 	private ArrayList<String> imgPathStr = strResource.getListIMG();
 	// private ArrayListMusic<String> music
-	//面板背景图片
+	// 面板背景图片
 	private String imgPath = imgPathStr.get(0);
-	//主要面板
+	// 主要面板
 	private JPanel panel1, panel2;
 	private JRadioButton musicOn, musicOff, taskOn, taskOff;// 背景音乐开关
 	private JComboBox<String> day, wether;// 时间,天气选择下拉列表.
@@ -165,10 +175,18 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	private JJLabel labelMusic;
 	private UndoManager undoManager = new UndoManager();// 新建可撤销、恢复列表类
 	private JJMenuItem[][] jitem;
-	private String[] playControl = { "列表循环", "单曲循环", "随机播放" };
-	private JComboBox<String> playBox = new JComboBox<String>(playControl);
+	// private String[] playControl = { "列表循环", "单曲循环", "随机播放" };
+	// private JComboBox<String> playBox = new JComboBox<String>(playControl);
+	private ButtonProvider bProvider = new LoopButtonProvider();
 
-	// 撤销和恢复
+	/*
+	 * private ImageIcon[] iconsSingle = UIUtils.getMusicIcon("single", 3);
+	 * private ImageIcon[] iconsRandom = UIUtils.getMusicIcon("random", 3);
+	 * private ImageIcon[] iconsLoop = UIUtils.getMusicIcon("loop", 3);
+	 */
+	// private final NoteFrame frame=new NoteFrame();
+	// 用于重新加载音乐与图片资源
+	private JButton reload;
 
 	public NoteFrame() {
 		/*
@@ -178,7 +196,6 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		Logger.getLogger("com.xby.log").info(
 				"list.size" + imgPathStr.size() + " ----------" + imgPath);
 		setImg(imgPath);
-
 		initBar();
 		initPanel3();
 		initSystemTray();
@@ -198,11 +215,14 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 		pack();
 		setLocationRelativeTo(null);
-		SetLookAndFeel.setLookAndFeel(this);
+		// SetLookAndFeel.setLookAndFeel(this);
 		music.setPlayingMusicIndex(node.getInt("i", 0) - 1);
+		// music.setMusicList(musicList);
+		// SetLookAndFeel.setDecorated();
 		setVisible(true);
 
 	}
+
 	/**
 	 * 设置系统托盘
 	 */
@@ -258,17 +278,19 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 
 		}
 	}
+
 	/**
 	 * 初始化格式菜单
+	 * 
 	 * @param menu
 	 */
 	void initFormat(JMenu menu) {
-//		Action action = new StyledEditorKit.BoldAction();
-//		action.putValue(Action.NAME, "Bold");
-//		menu.add(action);
+		// Action action = new StyledEditorKit.BoldAction();
+		// action.putValue(Action.NAME, "Bold");
+		// menu.add(action);
 		JMenuItem sizeMenu = new JJMenuItem("字体大小");
 		sizeMenu.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -291,33 +313,37 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 					// setCharacterAttributes(getJJTextPane(), attr, false);
 					getJJTextPane().setCharacterAttributes(attr, false);
 					try {
-						getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+						getJJTextPane().getStyledDocument().insertString(
+								getJJTextPane().getSelectionEnd(), " ", null);
 					} catch (BadLocationException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					StyleConstants.setForeground(attr, Color.BLACK);
-					getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
-					
+					getJJTextPane().getStyledDocument().setCharacterAttributes(
+							getJJTextPane().getSelectionEnd(), 1, attr, false);
+
 				}
 			}
 		});
-		JMenuItem fontItem=new JJMenuItem("字体风格选择");
-			fontItem.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					new FontFrame(getJJTextPane());
-				}
-			});
+		JMenuItem fontItem = new JJMenuItem("字体风格选择");
+		fontItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new FontFrame(getJJTextPane());
+			}
+		});
 		menu.add(fontItem);
 		menu.add(colorItem);
 		menu.add(sizeMenu);
 		// menu.add(new StyledEditorKit.FontSizeAction("14", 14));
-//		menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
-//		menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
+		// menu.add(new StyledEditorKit.FontFamilyAction("SansSerif",
+		// "SansSerif"));
+		// menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
 	}
+
 	/**
 	 * 初始化菜单栏
 	 */
@@ -362,6 +388,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// initTextArea();
 
 	}
+
 	/**
 	 * 初始化总体面板
 	 */
@@ -378,6 +405,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		add(pane1);
 
 	}
+
 	/**
 	 * 初始化弹出菜单
 	 */
@@ -392,6 +420,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 
 	}
+
 	/**
 	 * 初始化面板一
 	 */
@@ -412,15 +441,70 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		for (int i = 0; i < wetherStr.length; i++) {
 			wether.addItem(wetherStr[i]);
 		}
-		buttonPic = new JButton("插入图片");
-		buttonPic.addActionListener(this);
-		boldButton = new JJButton("粗体");
-		italicButton = new JJButton("斜体");
-		underlineButton = new JJButton("下划线");
-		//添加标签
+		// buttonPic = new JButton("插入图片");
+		tbProvider = new ToolButtonProvider();
+		boldButton = tbProvider.getButton("粗体");
+		// italicButton = new JJButton("斜体");
+		italicButton = tbProvider.getButton("斜体");
+		// underlineButton = new JJButton("下划线");
+		underlineButton = tbProvider.getButton("下划线");
+		// 添加标签
+		buttonPic = tbProvider.getButton("插入图片");
+		buttonPic.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JFileChooser chooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(
+						"jpg & gif&png图像文件", "jpg", "JPG", "jpeg", "JPEG",
+						"GIF", "gif", "png", "PNG");// 设置可选文件后缀名
+				chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
+				chooser.setFileFilter(filter);
+				// final JLabel label=new JLabel();
+				final PaintPanel panel = new PaintPanel();
+				panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null,
+						null, null, null));
+				panel.setPreferredSize(new Dimension(300, 300));
+				chooser.setAccessory(panel);
+				chooser.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent e) {
+						if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY == e
+								.getPropertyName()) {
+							File picfile = (File) e.getNewValue();
+							if (picfile != null && picfile.isFile()) {
+
+								// String imagePath = picfile.getPath();
+								// panel.setImgPath(imagePath);
+								Image image;
+								try {
+									image = Toolkit.getDefaultToolkit()
+											.getImage(picfile.toURI().toURL());
+									panel.setImage(image);
+									panel.repaint();
+								} catch (MalformedURLException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+							}
+						}
+					}
+				});
+				if (chooser.showOpenDialog(null) == 0) {
+					File file = chooser.getSelectedFile();
+					if (file.exists()) {
+
+						ImageIcon icon = new ImageIcon(file.getPath());
+						getJJTextPane().insertIcon(icon);
+					}
+				}
+
+			}
+		});
 		tabAdd();
 		boldButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -428,17 +512,19 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				StyleConstants.setBold(attr, true);
 				getJJTextPane().setCharacterAttributes(attr, false);
 				try {
-					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+					getJJTextPane().getStyledDocument().insertString(
+							getJJTextPane().getSelectionEnd(), " ", null);
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				StyleConstants.setBold(attr, false);
-				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(
+						getJJTextPane().getSelectionEnd(), 1, attr, false);
 			}
 		});
 		italicButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -446,17 +532,19 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				StyleConstants.setItalic(attr, true);
 				getJJTextPane().setCharacterAttributes(attr, false);
 				try {
-					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+					getJJTextPane().getStyledDocument().insertString(
+							getJJTextPane().getSelectionEnd(), " ", null);
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				StyleConstants.setItalic(attr, false);
-				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(
+						getJJTextPane().getSelectionEnd(), 1, attr, false);
 			}
 		});
 		underlineButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -464,15 +552,37 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				StyleConstants.setUnderline(attr, true);
 				getJJTextPane().setCharacterAttributes(attr, false);
 				try {
-					getJJTextPane().getStyledDocument().insertString(getJJTextPane().getSelectionEnd(), " ", null);
+					getJJTextPane().getStyledDocument().insertString(
+							getJJTextPane().getSelectionEnd(), " ", null);
 				} catch (BadLocationException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				StyleConstants.setUnderline(attr, false);
-				getJJTextPane().getStyledDocument().setCharacterAttributes(getJJTextPane().getSelectionEnd(), 1, attr, false);
+				getJJTextPane().getStyledDocument().setCharacterAttributes(
+						getJJTextPane().getSelectionEnd(), 1, attr, false);
 			}
 		});
+		reload = new JButton("重新加载");
+		// final ResourceReload load=new ResourceReload();
+//		final MusicList mlist = new MusicList();
+		reload.addActionListener(new ActionListener() {
+
+			@Override
+			public synchronized void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// load.reload();
+				DefaultListModel<String> model=(DefaultListModel<String>)musicList.getModel();
+				model.clear();
+				Vector<String> listStr=new MusicList().getListStr();
+				for (String str : listStr) {
+					model.addElement(str);
+				}
+				imgPathStr = strResource.getListIMG();
+				ThreadBean.setReload(true);
+			}
+		});
+
 		Box box = Box.createHorizontalBox();
 		box.add(new JLabel("日期"));
 		box.add(date);
@@ -483,6 +593,8 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		box.add(new JLabel("天气"));
 		box.add(wether);
 		Box box2 = Box.createHorizontalBox();
+		box2.add(reload);
+		box2.add(Box.createHorizontalStrut(30));
 		box2.add(boldButton);
 		box2.add(Box.createHorizontalStrut(30));
 		box2.add(italicButton);
@@ -503,6 +615,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		panel1.setVisible(true);
 
 	}
+
 	/**
 	 * 添加标签方法
 	 */
@@ -516,7 +629,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		JJTextPane textPanei = new JJTextPane();
 		HTMLDocument doci = new HTMLDocument();
 		// textPanei.setFont(new Font("黑体", 20, 20));
-		
+
 		// textPane.setLineWrap(true);// 设置自动换行
 		// textPane.setWrapStyleWord(true);// 激活断行不断字功能
 		textPanei.setEnabled(true);
@@ -566,6 +679,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// htmldoc = textPane.getDocument();
 
 	}
+
 	/**
 	 * 初始化面板2
 	 */
@@ -579,15 +693,16 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		JPanel taskPanel = new JPanel();
 		ButtonGroup musicGroup = new ButtonGroup();
 		ButtonGroup taskGroup = new ButtonGroup();
-		musicOn = new JRadioButton("开");
-		musicOff = new JRadioButton("关");
+		musicOn = UIUtils.createJRadioButton("play", "开");
+		musicOff = UIUtils.createJRadioButton("stop", "关");
 		taskOn = new JRadioButton("幻灯片开");
 		taskOff = new JRadioButton("幻灯片关");
-		backButton = new JButton("上一首");
-		fowardButton = new JButton("下一首");
+		backButton = UIUtils.createMusicJButton("pre", "上一首");
+		fowardButton = UIUtils.createMusicJButton("next", "下一首");
 		progress.setStringPainted(true);
 		backButton.addActionListener(this);
-		slider = new JSlider(0, 100, 0);
+		slider = UIUtils.createSlider(SwingConstants.HORIZONTAL);
+		slider.setBounds(10, 108, 270, 15);
 		slider.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -600,30 +715,62 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 			}
 		});
 		fowardButton.addActionListener(this);
-		playBox.addItemListener(new ItemListener() {
+		loopControll = bProvider.getButton("列表循环");
+		final ImageIcon[] iconsSingle = UIUtils.getMusicIcon("single", 3);
+		final ImageIcon[] iconsRandom = UIUtils.getMusicIcon("random", 3);
+		final ImageIcon[] iconsLoop = UIUtils.getMusicIcon("loop", 3);
+		loopControll.addActionListener(new ActionListener() {
 
 			@Override
-			public void itemStateChanged(ItemEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				switch ((String) playBox.getSelectedItem()) {
+
+				switch (e.getActionCommand()) {
 				case "列表循环":
-					ThreadBean.setSinglePlay(false);
-					ThreadBean.setRandomPlay(false);
-					break;
-				case "单曲循环":
 					ThreadBean.setRandomPlay(false);
 					ThreadBean.setSinglePlay(true);
+					// ImageIcon[] iconsSingle = UIUtils.getMusicIcon("single",
+					// 3);
+					// loopControll=bProvider.getButton("单曲循环");
+					UIUtils.setButton(loopControll, iconsSingle, "单曲循环");
+					loopControll.removeActionListener(this);
+					loopControll.addActionListener(this);
+					break;
+				case "单曲循环":
+					ThreadBean.setSinglePlay(false);
+					ThreadBean.setRandomPlay(true);
+					// loopControll=bProvider.getButton("随机播放");
+					UIUtils.setButton(loopControll, iconsRandom, "随机播放");
+					loopControll.removeActionListener(this);
+					loopControll.addActionListener(this);
 					break;
 				case "随机播放":
 					ThreadBean.setSinglePlay(false);
-					ThreadBean.setRandomPlay(true);
+					ThreadBean.setRandomPlay(false);
+					// loopControll=bProvider.getButton("列表循环");
+					UIUtils.setButton(loopControll, iconsLoop, "列表循环");
+					loopControll.removeActionListener(this);
+					loopControll.addActionListener(this);
 					break;
 				default:
 					break;
 				}
-
 			}
 		});
+		/*
+		 * playBox.addItemListener(new ItemListener() {
+		 * 
+		 * @Override public void itemStateChanged(ItemEvent e) { // TODO
+		 * Auto-generated method stub switch ((String)
+		 * playBox.getSelectedItem()) { case "列表循环":
+		 * ThreadBean.setSinglePlay(false); ThreadBean.setRandomPlay(false);
+		 * break; case "单曲循环": ThreadBean.setRandomPlay(false);
+		 * ThreadBean.setSinglePlay(true); break; case "随机播放":
+		 * ThreadBean.setSinglePlay(false); ThreadBean.setRandomPlay(true);
+		 * break; default: break; }
+		 * 
+		 * } });
+		 */
 
 		musicOn.addItemListener(this);
 		musicOff.addItemListener(this);
@@ -642,7 +789,8 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		boxh.add(Box.createHorizontalStrut(10));
 		boxh.add(musicOff);
 		boxh.add(Box.createHorizontalStrut(10));
-		boxh.add(playBox);
+		// boxh.add(playBox);
+		boxh.add(loopControll);
 		Box boxh2 = Box.createHorizontalBox();
 		boxh2.add(backButton);
 		boxh2.add(Box.createHorizontalStrut(5));
@@ -700,7 +848,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		panel1Box.add(Box.createVerticalStrut(15));
 		// panel1Box.add(backPanel);
 
-		JPanel listPanel = new JPanel();
+		listPanel = new JPanel();
 		labelMusic = new JJLabel();
 		labelMusic.setAlignmentX(CENTER_ALIGNMENT);
 		setLabelMusic(labelMusic);
@@ -709,7 +857,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 				TitledBorder.TOP, new Font("Dialog", Font.BOLD, 12), new Color(
 						51, 51, 51));
 		listPanel.setBorder(titleBorder3);
-		listPanel.add(musicList);
+		listPanel.add(new JScrollPane(musicList));
 		panel1Box.add(getLabelMusic());
 		panel1Box.add(Box.createVerticalStrut(15));
 		panel1Box.add(listPanel);
@@ -718,6 +866,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		panel2.setVisible(true);
 
 	}
+
 	/**
 	 * 主要动作处理
 	 */
@@ -725,6 +874,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		// TODO Auto-generated method stub
 		int i = tabPane.getSelectedIndex();
 		NoteFrameEvent event = new NoteFrameEvent(this);
+
 		event.actionEvent(e);
 	}
 
@@ -796,55 +946,89 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		return date.getText() + "   " + day.getSelectedItem() + "   "
 				+ wether.getSelectedItem();
 	}
+
 	/**
 	 * 用于背景图片变化的定时器任务
 	 */
-	TimerTask task = new TimerTask() {
-
-		int i = 0;
-		Random ran = new Random(imgPathStr.size());
-
-		public void run() {
-			// * if (i > imgPathStr.size() - 1) { i = 0; } i=ran.nextInt()-1;
-			// setAlpha(true);
-			/*
-			 * panel1.repaint(); panel2.repaint(); try { Thread.sleep(1000); }
-			 * catch (InterruptedException e) { // TODO Auto-generated catch
-			 * block e.printStackTrace(); }
-			 */
-			// setAlpha(false);
-			imgPath = imgPathStr.get(ran.nextInt(imgPathStr.size() - 1));
-			Logger.getLogger("com.xby.log").info("timer----->" + imgPath);
-			setImg(imgPath);
-			panel1.repaint();
-			panel2.repaint();
-		}
-	};
+	/*
+	 * TimerTask task = new TimerTask() {
+	 * 
+	 * int i = 0; Random ran = new Random(imgPathStr.size());
+	 * 
+	 * public void run() { // * if (i > imgPathStr.size() - 1) { i = 0; }
+	 * i=ran.nextInt()-1; // setAlpha(true);
+	 * 
+	 * panel1.repaint(); panel2.repaint(); try { Thread.sleep(1000); } catch
+	 * (InterruptedException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); }
+	 * 
+	 * // setAlpha(false); imgPath =
+	 * imgPathStr.get(ran.nextInt(imgPathStr.size() - 1));
+	 * Logger.getLogger("com.xby.log").info("timer----->" + imgPath);
+	 * setImg(imgPath); panel1.repaint(); panel2.repaint(); } };
+	 */
 	private JJLabel labelTime;
 	private String tabTitle = "pane";
-	private JSlider slider;
+	private MySlider slider;
+	private JButton loopControll;
+	private ToolButtonProvider tbProvider;
+	private boolean timerWaited = false;
+	private JPanel listPanel;
 
 	// private JRadioButton[] background;
 	/**
 	 * 打开关闭定时器相关方法
 	 */
 	void taskOpen() {
+		// timer与task只能使用一次
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
 
-		timer.schedule(task, 10000, 10000);
+			int i = 0;
+			Random ran = new Random(imgPathStr.size());
+
+			public void run() {
+				// * if (i > imgPathStr.size() - 1) { i = 0; }
+				// i=ran.nextInt()-1;
+				// setAlpha(true);
+				/*
+				 * panel1.repaint(); panel2.repaint(); try { Thread.sleep(1000);
+				 * } catch (InterruptedException e) { // TODO Auto-generated
+				 * catch block e.printStackTrace(); }
+				 */
+				// setAlpha(false);
+				imgPath = imgPathStr.get(ran.nextInt(imgPathStr.size() - 1));
+				Logger.getLogger("com.xby.log").info("timer----->" + imgPath);
+				File file=new File(imgPath);
+				while(!file.exists()){
+					imgPathStr = strResource.getListIMG();
+					imgPath = imgPathStr.get(ran.nextInt(imgPathStr.size() - 1));
+					file=new File(imgPath);
+				}
+				setImg(imgPath);
+				panel1.repaint();
+				panel2.repaint();
+			}
+		}, 10000, 10000);
 	}
 
 	void taskCancel() {
 		timer.cancel();
+
 	}
+
 	/**
 	 * 返回正在编辑的标签索引
+	 * 
 	 * @return
 	 */
 	public int getSelectTabIndex() {
 		return tabPane.getSelectedIndex();
 	}
+
 	/**
-	 *设置面板图片
+	 * 设置面板图片
+	 * 
 	 * @param path
 	 */
 	private void setImg(String path) {
@@ -872,8 +1056,9 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	 */
 	/**
 	 * 带有背景图片的面板内部类
+	 * 
 	 * @author xby64
-	 *
+	 * 
 	 */
 	class MyPanel extends JPanel {
 		/**
@@ -926,12 +1111,12 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 	}
 
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
 		// 以下两句必须放在main（）方法中才能生效，且要在创建窗体之前执行
-		JFrame.setDefaultLookAndFeelDecorated(true);// 使标题栏装饰生效
-		JDialog.setDefaultLookAndFeelDecorated(true);// 使对话框装饰生效
-		new NoteFrame();
-	}
+		// JFrame.setDefaultLookAndFeelDecorated(true);// 使标题栏装饰生效
+		// JDialog.setDefaultLookAndFeelDecorated(true);// 使对话框装饰生效
+//		new NoteFrame();
+//	}
 
 	/**
 	 * @return the labelMusic

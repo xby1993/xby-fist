@@ -47,7 +47,7 @@ public class FontSizeFrame extends JFrame implements ActionListener {
 		init();
 		pack();
 		setLocationRelativeTo(null);
-		SetLookAndFeel.setLookAndFeel(this);
+//		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 

@@ -46,7 +46,7 @@ public class FontFrame extends JFrame implements ActionListener {
 		init();
 		pack();
 		setLocationRelativeTo(null);
-		SetLookAndFeel.setLookAndFeel(this);
+//		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 

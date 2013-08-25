@@ -36,7 +36,7 @@ public class Register extends JFrame implements ActionListener {
 	private JButton confirm, cancel;
 	private Box baseBox, boxV1, boxV2;
 	private JPanel panel;
-	private Strings strResource = new Strings();
+	private Strings strResource = Strings.getInstance();
 	private String imgPath = strResource.getREGISTER_IMG();
 	private AbstractButton menuItem;
 	private JMenuBar menuBar;
@@ -50,7 +50,7 @@ public class Register extends JFrame implements ActionListener {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(null);
-		SetLookAndFeel.setLookAndFeel(this);
+//		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 

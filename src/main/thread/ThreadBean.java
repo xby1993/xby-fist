@@ -8,24 +8,26 @@ import javax.sound.sampled.AudioInputStream;
  *
  */
 public class ThreadBean {
+	/**用于控制是否重新加载歌曲*/
+	private volatile static boolean isReload=false;
 	/** 用于控制单曲循环*/
-	private static boolean singlePlay=false;
+	private volatile static boolean singlePlay=false;
 	/** 用于控制JMusic的上一首歌曲*/
-	private static boolean backSong=false;
+	private volatile static boolean backSong=false;
 	/** 用于JMusic的下一首歌曲*/
-	private static boolean fowardSong=false;
+	private volatile static boolean fowardSong=false;
 	/** 用于控制随机播放*/
-	private static boolean randomPlay=false;
+	private volatile static boolean randomPlay=false;
 	/**用于计算歌曲长度 */
-	private static long totalLen=0L;
+	private volatile static long totalLen=0L;
 	/**说明歌曲长度是否计算完毕 */
-	private static boolean lenOver=false;
+	private volatile static boolean lenOver=false;
 	/**用于说明是否更换了歌曲 */
-	private static boolean changeMusic=false;
+	private volatile static boolean changeMusic=false;
 	/**储存用于歌曲长度计算的流 */
-	private static AudioInputStream audioIns;
+	private  static AudioInputStream audioIns;
 	/** 储存用于确定滑块是否变化*/
-	private static boolean spliderChange=false;
+	private volatile static boolean spliderChange=false;
 	/** 用于存放已经播放的歌曲字节*/
 	private static byte[] playedBytes;
 	/**歌曲时间长度储存 */
@@ -183,6 +185,20 @@ public class ThreadBean {
 	 */
 	public static void setPlayedBytes(byte[] playedBytes) {
 		ThreadBean.playedBytes = playedBytes;
+	}
+
+	/**
+	 * @return the isReload
+	 */
+	public static boolean isReload() {
+		return isReload;
+	}
+
+	/**
+	 * @param isReload the isReload to set
+	 */
+	public static void setReload(boolean isReload) {
+		ThreadBean.isReload = isReload;
 	}
 
 }

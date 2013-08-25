@@ -1,7 +1,5 @@
 package main.music;
 
-import java.awt.Color;
-import java.awt.Label;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,46 +23,47 @@ import main.thread.MusicProgressCount;
 import main.thread.ThreadBean;
 import source.Strings;
 import ui.JJLabel;
+import ui.MySlider;
 
 public class JMusic {
-	//正在播放的音乐索引
+	// 正在播放的音乐索引
 	private static int i = 0;
-	//字符串资源
-	private Strings strRes = new Strings();
-	//储存音乐列表
+	// 字符串资源
+	private Strings strRes = Strings.getInstance();
+	// 储存音乐列表
 	private ArrayList<String> musicList = strRes.getListMusic();
-	//音乐播放状态是关闭还是打开
+	// 音乐播放状态是关闭还是打开
 	private static boolean state = false;
-	//音乐播放相关
+	// 音乐播放相关
 	private SourceDataLine line;
 	private AudioInputStream ins;
 	private Line.Info info = new Line.Info(Clip.class);
-	//如果用户不自定义音乐,则设置默认的音乐
+	// 如果用户不自定义音乐,则设置默认的音乐
 	private String defaultMusic = musicList.get(0);
-	//音乐还没播放完毕的控制
+	// 音乐还没播放完毕的控制
 	private boolean musicNotOver = true;
 	private AudioFormat audioFormat;
 	private DataLine.Info dataLineInfo;
-	//音乐播放线程
+	// 音乐播放线程
 	private JMusic.PlayThread playThread = new JMusic.PlayThread(this);
 	private Thread thread = new Thread(playThread);
-	//音乐是否被用户改变
+	// 音乐是否被用户改变
 	private static boolean musicChaged = true;
-	//用户是否改变列表的选择项
+	// 用户是否改变列表的选择项
 	private static boolean select = false;
-	//用户选择的音乐
+	// 用户选择的音乐
 	private static String selectMusic = "";
-	//音乐名称标签
+	// 音乐名称标签
 	private JJLabel label;
-	private Strings resStr = new Strings();
+	private Strings resStr = Strings.getInstance();
 	private long playCount;
-	//音乐时间标签
+	// 音乐时间标签
 	private JLabel labelTime;
-	//进度条
+	// 进度条
 	private JProgressBar progress;
-	//音乐滑块
-	private JSlider slider;
-	//音乐已经播放的长度
+	// 音乐滑块
+	private MySlider slider;
+	// 音乐已经播放的长度
 	private long playLen;
 
 	public JMusic() {
@@ -78,6 +77,7 @@ public class JMusic {
 		 * Auto-generated catch block e.printStackTrace(); }
 		 */
 	}
+
 	/**
 	 * 准备音乐播放
 	 */
@@ -89,8 +89,15 @@ public class JMusic {
 				ins = AudioSystem.getAudioInputStream(JMusic.class
 						.getResource(defaultMusic));
 			} else {
-				ins = AudioSystem
-						.getAudioInputStream(new File(musicList.get(i)));
+				File file = new File(musicList.get(i));
+				while (!file.exists()) {
+					if (i < musicList.size() - 1)
+						i++;
+					else
+						i = 0;
+					file = new File(musicList.get(i));
+				}
+				ins = AudioSystem.getAudioInputStream(file);
 			}
 			audioFormat = ins.getFormat();
 			audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
@@ -112,8 +119,10 @@ public class JMusic {
 		}
 		line.start();
 	}
+
 	/**
 	 * 用于判断是否使用默认音乐,如果用户没有自定义的话则返回true
+	 * 
 	 * @param str
 	 * @return
 	 */
@@ -122,9 +131,10 @@ public class JMusic {
 			return true;
 		return false;
 	}
-/**
- * 音乐播放方法
- */
+
+	/**
+	 * 音乐播放方法
+	 */
 	public void musicOpen() {
 		++playCount;// 用于统计播放次数,第一次播放需要启动线程,其他的只需修改statefield通知线程即可
 		JMusic.state = true;
@@ -139,6 +149,7 @@ public class JMusic {
 		 */
 
 	}
+
 	/**
 	 * 音乐关闭方法
 	 */
@@ -146,11 +157,13 @@ public class JMusic {
 		JMusic.state = false;
 
 	}
-/**
- * 音乐播放线程类
- * @author xby64
- *
- */
+
+	/**
+	 * 音乐播放线程类
+	 * 
+	 * @author xby64
+	 * 
+	 */
 	class PlayThread implements Runnable {
 
 		private int cnt = 0;
@@ -158,9 +171,9 @@ public class JMusic {
 		private Random random = new Random();
 		private long tempLen = 0L;
 		private long time;
-		private MusicSettings labelAnim1=new MusicSettings(800, 5, 5);
-		private MusicSettings labelAnim2=new MusicSettings(800, 15, 8);
-		
+		private MusicSettings labelAnim1 = new MusicSettings(800, 5, 5);
+		private MusicSettings labelAnim2 = new MusicSettings(800, 15, 8);
+
 		public PlayThread(JMusic music) {
 			this.music = music;
 			// thread=new Thread(this);
@@ -191,6 +204,7 @@ public class JMusic {
 				}
 			}
 		}
+
 		/** 用于设置播放时间 */
 		void setTime() {
 			time = (progress.getValue() + 1)
@@ -205,13 +219,12 @@ public class JMusic {
 		 * 设置正在播放的音乐文件名显示标签
 		 */
 		void setPlayName() {
-			String name=musicList.get(i-1);
-			name=name.substring(
-					name.lastIndexOf(
-							resStr.getPathSplit()) + 1,
+			String name = musicList.get(i - 1);
+			name = name.substring(name.lastIndexOf(resStr.getPathSplit()) + 1,
 					name.lastIndexOf("."));
-/*			if(name.length()>12)
-				name=name.substring(0, 11);*/
+			/*
+			 * if(name.length()>12) name=name.substring(0, 11);
+			 */
 			labelAnim2.setPlayname(name);
 		}
 
@@ -224,11 +237,17 @@ public class JMusic {
 			labelAnim1.setLabel(labelTime);
 			labelAnim2.setLabel(getLabel());
 			while (true) {
-				if (!music.musicNotOver) {
+				if(ThreadBean.isReload()){
+					music.musicList = strRes.getListMusic();
+					Logger.getLogger("com.xby.log").info("music.musiclist"+music.musicList);
+					ThreadBean.setReload(false);
+				}
+/*				if (!music.musicNotOver) {
 					if (music.i >= music.musicList.size()) {
 						music.i = 0;
 					}
-				}
+				}*/
+				
 				// 如果是单曲循环
 				if (ThreadBean.isSinglePlay()) {
 					--i;
@@ -265,7 +284,7 @@ public class JMusic {
 					ArrayList<byte[]> arrayByte = new ArrayList<byte[]>();// 每次都重新生成已播放歌曲字节存放数组以便于快退时提取
 					while (music.musicNotOver = ((cnt = music.ins.read(
 							tempBuffer, 0, tempBuffer.length)) != -1)) {
-						//用于重复调用设置歌曲名以产生动态效果
+						// 用于重复调用设置歌曲名以产生动态效果
 						setPlayName();
 						playLen += (long) tempBuffer.length;
 						// System.out.println(tempBuffer[14]+" "+tempBuffer[100]);
@@ -467,8 +486,10 @@ public class JMusic {
 		}
 
 	}
+
 	/**
 	 * 音乐格式选择方法
+	 * 
 	 * @return
 	 */
 	AudioInputStream musicFormatSelect() {
@@ -478,8 +499,8 @@ public class JMusic {
 				ins = AudioSystem.getAudioInputStream(JMusic.class
 						.getResource(defaultMusic));
 			} else {
-				ins = AudioSystem
-						.getAudioInputStream(new File(musicList.get(i)));
+				ins = AudioSystem.getAudioInputStream(new File(musicList
+						.get(i)));
 			}
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
@@ -587,7 +608,7 @@ public class JMusic {
 	/**
 	 * @return the slider
 	 */
-	public JSlider getSlider() {
+	public MySlider getSlider() {
 		return slider;
 	}
 
@@ -595,9 +616,14 @@ public class JMusic {
 	 * @param slider
 	 *            the slider to set
 	 */
-	public void setSlider(JSlider slider) {
+	public void setSlider(MySlider slider) {
 		this.slider = slider;
 	}
+
+	/**
+	 * @return the musicList
+	 */
+	
 
 	// Block等待临时数据被输出为空
 	// sourceDataLine.drain();

@@ -236,13 +236,15 @@ public class FileOperator {
 		File file ;
 //		if (frame.getTempFile() == null) {
 			JFileChooser chooser = new JFileChooser(defaultPath);
-			chooser.setSelectedFile(new File("*.html"));// 设置默认选中文件名称
+			chooser.setSelectedFile(new File(".xby"));// 设置默认选中文件名称
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(
 					ext[0],ext[1],ext[2]);// 设置可选文件后缀名
 			chooser.setAcceptAllFileFilterUsed(false);// 取消所有文件选项
 			chooser.setFileFilter(filter);
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				file = chooser.getSelectedFile();
+				if(!file.getName().endsWith(".xby"))
+					file=new File(file.getPath()+".xby");
 				if (file.exists()) {
 					int confirm = JOptionPane.showConfirmDialog(null,
 							"是否覆盖已有文件？");

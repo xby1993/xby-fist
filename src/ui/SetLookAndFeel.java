@@ -9,9 +9,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class SetLookAndFeel {
 	public static void setLookAndFeel(JFrame com){
 		try {
-//			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+//			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 //			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-			UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
+//			UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //			com.setResizable(true);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException | UnsupportedLookAndFeelException e) {

@@ -49,7 +49,7 @@ public class Login extends JFrame implements ActionListener {
 	private JButton logIn, register;
 	private Box baseBox, boxV1, boxV2;
 	private JPanel panel;
-	private Strings strResource = new Strings();
+	private Strings strResource = Strings.getInstance();
 	private boolean success=false;
 	private static String usrname;
 	public Login() {
@@ -58,7 +58,7 @@ public class Login extends JFrame implements ActionListener {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(null);
-		SetLookAndFeel.setLookAndFeel(this);
+//		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 

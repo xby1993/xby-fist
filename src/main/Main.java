@@ -14,10 +14,10 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		SetLookAndFeel.setDecorated();
+//		SetLookAndFeel.setDecorated();
 		EventQueue.invokeLater(new Runnable(){
 			public void run(){
-				new Strings().initlog();
+				Strings.getInstance().initlog();
 				new Policy();
 			}
 		});

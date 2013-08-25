@@ -7,6 +7,8 @@
 	<classpathentry kind="lib" path="/home/xby64/document/java/jl1.0.1.jar"/>
 	<classpathentry kind="lib" path="/home/xby64/document/java/mp3spi1.9.5.jar"/>
 	<classpathentry kind="lib" path="/home/xby64/document/java/tritonus_share.jar"/>
-	<classpathentry kind="lib" path="/home/xby64/download/liquidlnf-0.2.9-alpha5/liquidlnf.jar"/>
+	<classpathentry kind="lib" path="/home/xby64/document/myeclipse/liquidlnf.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/jvm/jdk1.7.0_21/db/lib/derby.jar"/>
+	<classpathentry kind="lib" path="/usr/lib/jvm/jdk1.7.0_21/db/lib/derbytools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

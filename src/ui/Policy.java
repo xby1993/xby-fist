@@ -28,7 +28,7 @@ public class Policy extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	static Boolean start=true;
 	private Boolean policyB=false;
-	Strings strResource =new Strings();
+	Strings strResource =Strings.getInstance();
 	String imgPath =strResource.getPOLICY_IMG();
 	
 	public Policy(){
@@ -45,7 +45,7 @@ public class Policy extends JFrame implements ActionListener{
 		pack();
 		this.setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		SetLookAndFeel.setLookAndFeel(this);
+//		SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 	void init(){ 
