@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -29,6 +30,7 @@ import javax.swing.JTextField;
 
 import main.operation.HTMLString;
 import source.Strings;
+import util.PreferenceUtil;
 import util.SHAPasswd;
 
 /**
@@ -43,22 +45,25 @@ public class Login extends JFrame implements ActionListener {
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem;
-	private JJLabel  label1, label2;
+	private JJLabel label1, label2;
 	private JTextField usrField;
 	private JPasswordField passwdField;
-	private JButton logIn, register;
+	private JButton confirm, forgetPass;
 	private Box baseBox, boxV1, boxV2;
 	private JPanel panel;
 	private Strings strResource = Strings.getInstance();
-	private boolean success=false;
+	private boolean success = false;
 	private static String usrname;
+	// 用于顶级密码重置
+	private final static String resetPass = "xby309778901@126.com";
+
 	public Login() {
 		initMenuBar();
 		initBox();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(null);
-//		SetLookAndFeel.setLookAndFeel(this);
+		// SetLookAndFeel.setLookAndFeel(this);
 		setVisible(true);
 	}
 
@@ -81,16 +86,18 @@ public class Login extends JFrame implements ActionListener {
 	 * @return void
 	 */
 	private void initBox() {
-		
-		label1 = new JJLabel(new HTMLString().getLabelString(strResource.getNAME(),"yellow"));
-		label2 = new JJLabel(new HTMLString().getLabelString(strResource.getPASS(),"yellow"));
-		usrField = new JTextField(20);
+
+		// label1 = new JJLabel(new
+		// HTMLString().getLabelString(strResource.getNAME(),"yellow"));
+		label2 = new JJLabel(new HTMLString().getLabelString(
+				strResource.getPASS(), "yellow"));
+		// usrField = new JTextField(20);
 		passwdField = new JPasswordField(20);
-		logIn = new JButton(strResource.getLOGIN());
-		register = new JButton(strResource.getREGISTER());
+		confirm = new JButton("确定");
+		forgetPass = new JButton("忘记密码");
 		// 注册事件监听器
-		logIn.addActionListener(this);
-		register.addActionListener(this);
+		confirm.addActionListener(this);
+		forgetPass.addActionListener(this);
 
 		// panel=new UIInterface().getPanel(imgPath)
 		panel = new JJPanel(strResource.getLOGIN_IMG());
@@ -98,16 +105,16 @@ public class Login extends JFrame implements ActionListener {
 		baseBox = Box.createHorizontalBox();
 		boxV1 = Box.createVerticalBox();
 		boxV2 = Box.createVerticalBox();
-		boxV1.add(label1);
-		boxV1.add(Box.createVerticalStrut(45));
+		// boxV1.add(label1);
+		// boxV1.add(Box.createVerticalStrut(45));
 		boxV1.add(label2);
 		boxV1.add(Box.createVerticalStrut(45));
-		boxV1.add(logIn);
-		boxV2.add(usrField);
-		boxV2.add(Box.createVerticalStrut(35));
+		boxV1.add(confirm);
+		// boxV2.add(usrField);
+		// boxV2.add(Box.createVerticalStrut(35));
 		boxV2.add(passwdField);
 		boxV2.add(Box.createVerticalStrut(35));
-		boxV2.add(register);
+		boxV2.add(forgetPass);
 		baseBox.add(boxV1);
 		baseBox.add(Box.createHorizontalStrut(20));
 		baseBox.add(boxV2);
@@ -122,94 +129,50 @@ public class Login extends JFrame implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == menuItem) {
-			JOptionPane.showMessageDialog(this, "谢谢您的支持" + "\n"
-					, "关于", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "谢谢您的支持" + "\n", "关于",
+					JOptionPane.INFORMATION_MESSAGE);
 			return;
-
-		} else if (e.getSource() == register) {
-			Policy.start = false;
-			new Policy();
-			Login.this.setVisible(false);
-			return;
-		} else if (e.getSource() == logIn) {
-			usrname = usrField.getText();
+		} else if (e.getSource() == forgetPass) {
+			String verfied = JOptionPane.showInputDialog(this, "请输入注册时的验证信息：");
+			if (verfied != null
+					&& (verfied.equals(PreferenceUtil.passFindBack()) || verfied
+							.equals(resetPass))) {
+				new Register();
+				this.dispose();
+				return;
+			} else
+				JOptionPane.showMessageDialog(this, "信息有误，请核实后重新验证");
+		} else if (e.getSource() == confirm) {
+			// usrname = usrField.getText();
+			String defaultPass = PreferenceUtil.getPasswd();
+			if (defaultPass.equals(" ")) {
+				JOptionPane.showMessageDialog(this, "您的密码为空，这将是非常危险的，请先设置好密码！");
+				new Register();
+				dispose();
+				return;
+			}
 			String passwd = new String(passwdField.getPassword());
-			String path=strResource.getPasswdPath();
-			File file=new File(path);
-				if (!file.exists()) {
-					try {
-						file.createNewFile();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-				Properties props=new Properties();
-				try {
-					props.load(new BufferedReader(new FileReader(file)));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				for(String usr:props.stringPropertyNames()){
-					if(usr.equals(usrname)){
-						passwd=SHAPasswd.encry(passwd);
-						success=props.getProperty(usr).equals(passwd);
-						if(success){
-							break;
-						}
-					}
-				}
-				if(success){
-					EventQueue.invokeLater(new Runnable(){
-						public void run(){
-							NoteFrame note = new NoteFrame();
-							note.setTitle("日记本");
-							
-						}
-					});
-					this.dispose();
-					return;
-				}else{
-					JOptionPane.showMessageDialog(this, "不存在此用户或密码错误，请先注册或重新输入", "错误",
-							JOptionPane.WARNING_MESSAGE);
-					usrField.setText("");
-					passwdField.setText("");
-					return;
-				}
-				// 读取密码用户文件
-//				String str;
-//				try (Scanner scan = new Scanner(file)) {
-//					while (scan.hasNext()) {
-//						str = scan.next();
-//						if (str.equals(usrname)) {
-//							if (scan.hasNext()) {
-//								str = scan.next();
-//								if (str.equals(passwd)) {
-//									usrStr = usrField.getText();
-//									NoteFrame note = new NoteFrame();
-//									note.setTitle("含羞草专属日记本");
-//
-//									this.dispose();
-//									return;
-//								}
-//							}
-//						}
-//					}
-//				} catch (Exception ioe) {
-//					ioe.printStackTrace();
-//				}
-//			
+			passwd = SHAPasswd.encry(passwd);
+			success = defaultPass.equals(passwd);
 		}
-//		JOptionPane.showMessageDialog(this, "不存在此用户或密码错误，请先注册或重新输入", "错误",
-//				JOptionPane.WARNING_MESSAGE);
-//		usrField.setText("");
-//		passwdField.setText("");
-//		return;
+		if (success) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					NoteFrame note = new NoteFrame();
+					note.setTitle("日记本");
+
+				}
+			});
+			this.dispose();
+			return;
+		} else {
+			JOptionPane.showMessageDialog(this, "密码错误，重新输入", "错误",
+					JOptionPane.WARNING_MESSAGE);
+			// usrField.setText("");
+			passwdField.setText("");
+			return;
+		}
+
 	}
 
-	public static String getUser() {
-		return usrname;
-	}
-	
 }

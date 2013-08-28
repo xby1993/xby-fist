@@ -116,7 +116,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 			JTabbedPane.SCROLL_TAB_LAYOUT);
 	private File tempFile;
 	private Cursor cursor = new Cursor(Cursor.HAND_CURSOR);// 设置光标
-	private JMusic music = new JMusic();// 音乐类实例
+	private JMusic music = JMusic.getJMusic();// 音乐类实例
 	private int tabs;
 	private JButton buttonPic;// 插入图片按钮
 	/** 用于控制歌曲上下播放按钮 */
@@ -187,7 +187,6 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 	// private final NoteFrame frame=new NoteFrame();
 	// 用于重新加载音乐与图片资源
 	private JButton reload;
-
 	public NoteFrame() {
 		/*
 		 * for (int i=0; i<imgPathStr.size();i++)
@@ -648,7 +647,7 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		MutableAttributeSet attr = new SimpleAttributeSet();
 		StyleConstants.setFontSize(attr, 16);
 		textPanei.setCharacterAttributes(attr, false);
-		textPanei.setFont(new Font("仿宋", Font.PLAIN, 16));
+		textPanei.setFont(new Font("楷体", Font.PLAIN, 16));
 		JScrollPane scrollPanei = new JScrollPane(textPanei);
 		textPanei.setBorder(new LineBorder(Color.BLUE, 4, true));
 		// scrollpane = new JScrollPane(textArea);
@@ -1111,12 +1110,12 @@ public class NoteFrame extends JFrame implements ActionListener, ItemListener {
 		}
 	}
 
-//	public static void main(String[] args) {
+	public static void main(String[] args) {
 		// 以下两句必须放在main（）方法中才能生效，且要在创建窗体之前执行
 		// JFrame.setDefaultLookAndFeelDecorated(true);// 使标题栏装饰生效
 		// JDialog.setDefaultLookAndFeelDecorated(true);// 使对话框装饰生效
-//		new NoteFrame();
-//	}
+		new NoteFrame();
+	}
 
 	/**
 	 * @return the labelMusic

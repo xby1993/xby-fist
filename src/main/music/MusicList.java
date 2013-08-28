@@ -27,7 +27,7 @@ public class MusicList {
 	private JScrollPane scroll;
 	private String split = resStr.getPathSplit();
 	private DefaultListModel<String> model;
-
+	private JMusic music = JMusic.getJMusic();
 	public MusicList() {
 //		initList();
 //		Logger.getLogger("com.xby.log").info("list--------------\n"+list+"\n"+"listStr---------------\n"+listStr);
@@ -52,7 +52,7 @@ public class MusicList {
 		musicList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		musicList.setModel(model);
 //		musicList.setListData(listStr);
-		musicList.setVisibleRowCount(12);
+		musicList.setVisibleRowCount(8);
 //		scroll.setViewportView(musicList);
 		/*
 		 * musicList.addListSelectionListener(new ListSelectionListener() {
@@ -78,7 +78,7 @@ public class MusicList {
 					list.setSelectionForeground(Color.GREEN);
 					selectMusic = list.getSelectedValue();
 					Logger.getLogger("com.xby.log").info(selectMusic);
-					JMusic music = new JMusic();
+					
 					music.setSelectMusic(getSelectMusicIndex());
 					music.setSelect(true);
 					// music.musicOpen();

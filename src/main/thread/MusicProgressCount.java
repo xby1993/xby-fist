@@ -11,7 +11,7 @@ import javax.sound.sampled.AudioInputStream;
  * 
  */
 public class MusicProgressCount implements Runnable {
-	private int READ_LEND = 320;
+	private int READ_LEND = 2048;
 	private long len = 0L;
 	private AudioInputStream audioIns;
 	private byte[] tempBuffer = new byte[READ_LEND];

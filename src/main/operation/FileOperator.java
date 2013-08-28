@@ -30,7 +30,7 @@ public class FileOperator {
 //	private HTMLEditorKit editorKit;
 	private File tfile;
 	String defaultPath = FileOperator.class.getResource("/").getPath()
-			+ Login.getUser();
+			+ "xby";
 	private File savefile;
 	private File openfile;
 	private File readfile;

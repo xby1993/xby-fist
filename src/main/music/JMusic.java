@@ -27,7 +27,7 @@ import ui.MySlider;
 
 public class JMusic {
 	// 正在播放的音乐索引
-	private static int i = 0;
+	private volatile static int i = 0;
 	// 字符串资源
 	private Strings strRes = Strings.getInstance();
 	// 储存音乐列表
@@ -50,7 +50,7 @@ public class JMusic {
 	// 音乐是否被用户改变
 	private static boolean musicChaged = true;
 	// 用户是否改变列表的选择项
-	private static boolean select = false;
+	private volatile static boolean select = false;
 	// 用户选择的音乐
 	private static String selectMusic = "";
 	// 音乐名称标签
@@ -65,8 +65,9 @@ public class JMusic {
 	private MySlider slider;
 	// 音乐已经播放的长度
 	private long playLen;
+	private final static JMusic music = new JMusic();
 
-	public JMusic() {
+	private JMusic() {
 
 		/*
 		 * try { line = (SourceDataLine)AudioSystem.getLine(info); } catch
@@ -219,6 +220,8 @@ public class JMusic {
 		 * 设置正在播放的音乐文件名显示标签
 		 */
 		void setPlayName() {
+			if (i - 1 < 0)
+				i = 1;
 			String name = musicList.get(i - 1);
 			name = name.substring(name.lastIndexOf(resStr.getPathSplit()) + 1,
 					name.lastIndexOf("."));
@@ -229,25 +232,33 @@ public class JMusic {
 		}
 
 		/** 音乐播放主意逻辑 */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.lang.Runnable#run()
+		 */
 		public void run() {
-			byte tempBuffer[] = new byte[320];// 存放临时音乐数据
+			final int BYTE_LEN = 2048;
+			byte tempBuffer[] = new byte[BYTE_LEN];// 存放临时音乐数据
 			boolean breakFlag = false;// 用于多重循环跳出标志
 			Thread threadCount_len = new Thread(new MusicProgressCount());// 音乐字节长度计算线程
 			threadCount_len.start();
 			labelAnim1.setLabel(labelTime);
 			labelAnim2.setLabel(getLabel());
+
 			while (true) {
-				if(ThreadBean.isReload()){
+				if (ThreadBean.isReload()) {
 					music.musicList = strRes.getListMusic();
-					Logger.getLogger("com.xby.log").info("music.musiclist"+music.musicList);
+					Logger.getLogger("com.xby.log").info(
+							"music.musiclist" + music.musicList);
 					ThreadBean.setReload(false);
 				}
-/*				if (!music.musicNotOver) {
+				if (!music.musicNotOver) {
 					if (music.i >= music.musicList.size()) {
 						music.i = 0;
 					}
-				}*/
-				
+				}
+
 				// 如果是单曲循环
 				if (ThreadBean.isSinglePlay()) {
 					--i;
@@ -288,7 +299,7 @@ public class JMusic {
 						setPlayName();
 						playLen += (long) tempBuffer.length;
 						// System.out.println(tempBuffer[14]+" "+tempBuffer[100]);
-						byte[] tempp = new byte[320];
+						byte[] tempp = new byte[BYTE_LEN];
 						System.arraycopy(tempBuffer, 0, tempp, 0,
 								tempBuffer.length);
 						arrayByte.add(tempp);
@@ -323,22 +334,19 @@ public class JMusic {
 								// System.out.println("len: "+len+"n: "+len/320L+"jM:  "+(int)
 								// (arrayByte.size() - len / 320L));
 								tempLen = 0L;
-								for (int j = 0; j < (int) (arrayByte.size() - len / 320L); j++) {
-									System.out.println(arrayByte.size() + ":"
-											+ (j + len / 320L));
-									// System.exit(1);
-									byte[] bytetmp = new byte[320];
+								for (int j = 0; j < (int) (arrayByte.size() - len
+										/ BYTE_LEN); j++) {
+									byte[] bytetmp = new byte[BYTE_LEN];
 									// arrayByte.get((j+(int)len/320)).read(bytetmp);
-									bytetmp = arrayByte
-											.get(j + (int) len / 320);
-									byte[] tmp2 = new byte[320];
+									bytetmp = arrayByte.get(j + (int) len
+											/ BYTE_LEN);
+									byte[] tmp2 = new byte[BYTE_LEN];
 									System.arraycopy(bytetmp, 0, tmp2, 0,
 											bytetmp.length);
-									arrayByte.set(j + (int) len / 320, tmp2);
+									arrayByte.set(j + (int) len / BYTE_LEN,
+											tmp2);
 									// arrayByte.set(j+(int)len/320, new
 									// ByteArrayInputStream(tmp2));
-									System.out.println(bytetmp[17] + " "
-											+ bytetmp[100]);
 									// System.out.println(tempBuffer.length+":"+tempBuffer[319]);
 									playLen += bytetmp.length;
 									music.line
@@ -410,14 +418,17 @@ public class JMusic {
 							}
 							// setTime();
 						}
-						if (select) {
-							select = false;
-							if (ThreadBean.isSinglePlay())
-								i = i + 1;
-							line.drain();
-							line.stop();
-							Logger.getLogger("com.xby.log").info(i + ":" + 138);
-							break;
+						synchronized (this) {
+							if (select) {
+								select = false;
+								if (ThreadBean.isSinglePlay())
+									i = i + 1;
+								line.drain();
+								line.stop();
+								// Logger.getLogger("com.xby.log").info(
+								// i + ":" + 138);
+								break;
+							}
 						}
 						if (ThreadBean.isBackSong()) {
 							ThreadBean.setBackSong(false);
@@ -436,18 +447,7 @@ public class JMusic {
 							break;
 						}
 						while (!JMusic.state) {
-							// System.out.println(JMusic.state);
-							// line.drain();
-							// line.stop();
 							Thread.sleep(1000);
-
-							// Thread.currentThread().wait();
-
-							/*
-							 * Logger.getLogger("com.xby.log").info( "状态" +
-							 * Thread.currentThread().getState());
-							 */
-							// break;
 						}
 						if (cnt > 0) {
 							// 写入缓存数据
@@ -484,7 +484,6 @@ public class JMusic {
 				setMusicChaged(true);
 			}
 		}
-
 	}
 
 	/**
@@ -499,8 +498,8 @@ public class JMusic {
 				ins = AudioSystem.getAudioInputStream(JMusic.class
 						.getResource(defaultMusic));
 			} else {
-				ins = AudioSystem.getAudioInputStream(new File(musicList
-						.get(i)));
+				ins = AudioSystem
+						.getAudioInputStream(new File(musicList.get(i)));
 			}
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
@@ -567,7 +566,7 @@ public class JMusic {
 	}
 
 	public void setSelectMusic(int indexS) {
-		i = indexS;
+			i = indexS;
 		// return index;
 	}
 
@@ -620,10 +619,12 @@ public class JMusic {
 		this.slider = slider;
 	}
 
+	public static JMusic getJMusic() {
+		return music;
+	}
 	/**
 	 * @return the musicList
 	 */
-	
 
 	// Block等待临时数据被输出为空
 	// sourceDataLine.drain();
